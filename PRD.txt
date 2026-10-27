@@ -1,0 +1,951 @@
+# PRODUCT REQUIREMENTS DOCUMENT (PRD)
+# PC Builder Lab
+### Interactive Virtual Computer Assembly & Hardware Learning Platform
+
+**Document Version:** 2.0  
+**Product Type:** Educational Web Application  
+**Primary Audience:** Computer hardware beginners and students  
+**Initial Use Case:** CHASM minor project  
+**Platform:** Responsive web application  
+**Deployment Model:** Client-side application with local progress storage  
+**Recommended Stack:** React, TypeScript, Vite, Konva, Tailwind CSS
+
+---
+
+# 1. Executive Summary
+
+## 1.1 Product Vision
+
+PC Builder Lab is an interactive educational platform that allows students to learn computer hardware by virtually assembling a desktop computer.
+
+Instead of relying exclusively on textbooks, diagrams, and demonstrations, students can explore individual components, place them in a virtual computer case, identify compatibility problems, connect power cables, and complete a simulated PC build.
+
+The platform combines realistic hardware illustrations, interactive assembly, guided instruction, compatibility validation, and assessments into one cohesive learning experience.
+
+The goal is to make computer hardware education visual, practical, accessible, and engaging.
+
+## 1.2 Problem Statement
+
+Students studying computer hardware often face several challenges:
+
+- They memorize component names without understanding where the components are installed.
+- They may not have access to physical computer parts for practical experimentation.
+- Textbook diagrams do not adequately demonstrate assembly sequences or component placement.
+- Incorrect installation and compatibility problems can be difficult to understand theoretically.
+- Static educational websites rarely provide meaningful hands-on interaction.
+
+PC Builder Lab addresses these problems by providing a simulated environment where students can learn, experiment, make mistakes, and receive immediate explanations.
+
+## 1.3 Product Solution
+
+Build a browser-based PC assembly simulator featuring:
+
+1. **Learn Mode:** Explore computer components and their functions.
+2. **Guided Assembly:** Build a virtual PC with contextual instructions and installation hints.
+3. **Challenge Mode:** Assemble a computer independently and earn a score.
+4. **Compatibility Engine:** Validate component placement, compatibility, and assembly dependencies.
+5. **Connection Mode:** Complete simulated motherboard and graphics-card power connections.
+6. **Knowledge Assessment:** Answer questions based on the completed assembly.
+7. **Progress and Results:** Track completed steps, mistakes, quiz scores, and concepts to review.
+
+## 1.4 Product Differentiation
+
+PC Builder Lab should prioritize the relationship between visual interaction and learning.
+
+A student should be able to select a CPU, inspect its socket, attempt to install it in the wrong location, receive a meaningful explanation, and then install it correctly.
+
+The experience should teach not only *what a component is*, but also *where it belongs, why it belongs there, and what happens when the installation is incorrect*.
+
+---
+
+# 2. Product Goals and Success Criteria
+
+## 2.1 Primary Goals
+
+- Teach students to identify major desktop computer components.
+- Demonstrate component placement and basic installation dependencies.
+- Teach introductory compatibility concepts.
+- Simulate a complete desktop PC assembly workflow.
+- Provide immediate, understandable feedback.
+- Assess knowledge through practical challenges and quizzes.
+- Deliver a professional interface that feels like a real hardware-learning tool.
+
+## 2.2 MVP Success Criteria
+
+The first release will be considered successful when:
+
+- A first-time user can start a build without external instructions.
+- Users can identify the major components and understand their functions.
+- Every required component can be installed in its designated location.
+- Incorrect placements and incompatible components are rejected with explanations.
+- Users can complete required power connections.
+- Progress updates correctly after every successful action.
+- Undo and Reset behave predictably.
+- Challenge Mode produces an accurate score and mistake summary.
+- Progress can be saved and restored in the same browser.
+- The complete learning experience works without an account or backend.
+
+## 2.3 Non-Goals
+
+The MVP will not attempt to provide:
+
+- Full 3D computer assembly or free camera movement.
+- Complete electrical, thermal, or performance simulation.
+- BIOS or operating-system emulation.
+- Hundreds of commercially available components.
+- Real-time component prices or shopping integration.
+- Multiplayer assembly sessions.
+- Online leaderboards.
+- AI tutoring or chatbot functionality.
+- User accounts, cloud synchronization, or an administrative backend.
+
+These features may be considered after the core learning experience has been validated.
+
+---
+
+# 3. Target Users and Personas
+
+## 3.1 Primary Persona: Hardware Beginner
+
+**Profile:** A student learning the fundamentals of computer hardware.
+
+**Needs:**
+- Simple explanations.
+- Visual component identification.
+- Clear installation instructions.
+- Safe opportunities to experiment.
+- Feedback that explains mistakes without discouraging learning.
+
+**Desired outcome:** Understand how the major parts of a desktop computer fit together.
+
+## 3.2 Secondary Persona: Practical Examination Student
+
+**Profile:** A student preparing for laboratory assessments or a hardware practical demonstration.
+
+**Needs:**
+- A repeatable assembly workflow.
+- Practice without hints.
+- Questions about hardware functions.
+- A clear assessment score.
+- An opportunity to demonstrate practical understanding.
+
+**Desired outcome:** Complete an assembly independently and explain the major installation steps.
+
+## 3.3 Secondary Persona: Teacher or Demonstrator
+
+**Profile:** A teacher demonstrating hardware concepts to a class.
+
+**Needs:**
+- Visually clear hardware illustrations.
+- Demonstrable incorrect and correct installation scenarios.
+- Explanations that can be presented to students.
+- A repeatable classroom demonstration.
+
+**Desired outcome:** Explain hardware assembly concepts without requiring physical components for every demonstration.
+
+The MVP does not require a dedicated teacher dashboard.
+
+---
+
+# 4. Product Scope and Learning Modes
+
+The application will have three primary learning modes.
+
+## 4.1 Learn Mode
+
+### Purpose
+
+Allow users to explore components before beginning assembly.
+
+### Requirements
+
+- Display a categorized component library.
+- Allow users to select any available component.
+- Display a clear illustration of the selected component.
+- Show its name and hardware category.
+- Explain its purpose in beginner-friendly language.
+- Identify its installation location.
+- Explain basic compatibility requirements.
+- Provide a simple view of how the component fits into the computer.
+- Allow users to navigate between components without losing their place.
+
+### Example: CPU Information
+
+**Component:** Central Processing Unit (CPU)
+
+**What it does:** Executes instructions and performs calculations that help the computer run programs.
+
+**Where it goes:** The CPU socket on a compatible motherboard.
+
+**Important rule:** The CPU must match the motherboard's supported socket and compatibility requirements.
+
+**Installation concept:** The processor must be aligned correctly with its socket. Real-world installation requires care and manufacturer-specific instructions.
+
+Learn Mode should use a consistent information layout for every component.
+
+## 4.2 Guided Assembly Mode
+
+### Purpose
+
+Teach users to assemble a predefined desktop computer with contextual help.
+
+### Requirements
+
+- Present an assembly workspace containing the computer case and component library.
+- Highlight suitable installation locations when a component is selected.
+- Allow components to be selected by clicking or dragged into position.
+- Snap valid components into their designated locations.
+- Reject invalid placements.
+- Explain errors using concise, contextual messages.
+- Display an optional installation hint.
+- Update progress after successful installation.
+- Show an animation or other clear visual confirmation.
+- Allow the user to undo the previous successful action.
+- Allow the user to restart the assembly.
+
+### Example interaction
+
+1. The user selects the motherboard.
+2. The case's motherboard mounting area becomes highlighted.
+3. The user places the motherboard in the correct area.
+4. The motherboard snaps into position.
+5. A success message confirms the installation.
+6. The progress indicator updates.
+7. The application makes the next relevant learning step available.
+
+Guided Mode should prioritize teaching rather than penalizing mistakes.
+
+## 4.3 Challenge Mode
+
+### Purpose
+
+Assess whether users understand the assembly process without depending on hints.
+
+### Requirements
+
+- Begin with a clean assembly workspace.
+- Disable automatic placement hints.
+- Allow users to inspect components and attempt installations.
+- Record incorrect placement attempts.
+- Reject invalid installations without damaging the current assembly.
+- Track correct installations and completed connections.
+- Require all mandatory assembly tasks before completion.
+- Present a final knowledge quiz.
+- Calculate a score using documented scoring rules.
+- Show a breakdown of correct actions, mistakes, and quiz results.
+
+Challenge Mode should remain educational. Mistakes should be recorded and explained, not used to permanently block completion.
+
+---
+
+# 5. Core User Journey
+
+## 5.1 First-Time User Flow
+
+**Home → Choose Mode → Explore Components → Assemble PC → Complete Connections → Knowledge Quiz → Results**
+
+The application should make the next action obvious at every stage.
+
+### Step 1: Home
+
+The user sees:
+- Product name and concise introduction.
+- A visual preview of the assembly workspace.
+- Learn Mode, Guided Assembly, and Challenge Mode.
+- A Continue option when a saved session exists.
+- A short explanation of what the student will learn.
+
+### Step 2: Mode Selection
+
+The user chooses a learning mode.
+
+Guided Assembly should be the recommended starting point for beginners, while Learn Mode should remain available at any time.
+
+### Step 3: Assembly Workspace
+
+The user sees the case, component library, assembly progress, selected-component information, and contextual instructions.
+
+### Step 4: Installation
+
+The user selects and places components. The application validates the action and updates the assembly state.
+
+### Step 5: Connections
+
+The user connects required power connectors to their corresponding sockets.
+
+### Step 6: Completion
+
+The application checks whether all required components and connections are installed.
+
+### Step 7: Assessment
+
+The user answers hardware questions.
+
+### Step 8: Results
+
+The application displays completion status, score, mistakes, and topics to review.
+
+---
+
+# 6. Functional Requirements
+
+## 6.1 Component Library
+
+Each component must have a structured definition containing:
+
+- Unique component ID.
+- Display name.
+- Category.
+- Illustration asset.
+- Description.
+- Installation location.
+- Compatibility requirements.
+- Prerequisites.
+- Installation status.
+- Relevant learning information.
+
+### Initial component inventory
+
+| Component | Primary learning objective |
+|---|---|
+| PC case | Understand the enclosure and mounting areas |
+| Motherboard | Identify sockets, slots, and board connections |
+| CPU | Understand processing and socket compatibility |
+| CPU cooler | Understand cooling and installation dependencies |
+| RAM | Understand memory and DDR compatibility |
+| M.2 SSD | Understand solid-state storage and supported interfaces |
+| Graphics card | Understand graphics processing and PCIe installation |
+| Power supply (PSU) | Understand power delivery |
+| Power connectors | Understand the required power connections |
+
+The PC case serves as the assembly environment, while connectors are handled as part of the connection stage.
+
+## 6.2 Assembly Workspace
+
+The workspace must provide:
+
+- A visible computer case.
+- An assembly illustration with designated installation zones.
+- A component selection panel.
+- A selected-component information panel.
+- Progress information.
+- Contextual instructions.
+- Undo and Reset actions.
+- Zoom controls where needed.
+- Clear success and error feedback.
+
+The assembly area must remain the primary visual focus.
+
+Avoid filling the interface with unnecessary cards, decorative panels, or unrelated information.
+
+## 6.3 Component Placement
+
+Every placeable component must have a predefined target zone.
+
+When the user attempts to install a component, the application must validate:
+
+1. Whether the target zone accepts that component category.
+2. Whether the component is compatible with the selected configuration.
+3. Whether required prerequisites have been completed.
+4. Whether the target slot is already occupied.
+5. Whether the installation action is valid in the current mode.
+
+If validation succeeds, the component is installed.
+
+If validation fails, the current assembly state remains unchanged and the user receives an explanation.
+
+## 6.4 Compatibility and Dependency Engine
+
+Compatibility rules must be separated from interface components.
+
+The engine should support the following rules:
+
+| Rule | Expected behavior |
+|---|---|
+| CPU socket compatibility | Reject a CPU incompatible with the motherboard |
+| RAM generation | Reject unsupported DDR generations |
+| CPU cooler dependency | Require the CPU to be installed first |
+| Cooler compatibility | Validate supported CPU socket or mounting configuration |
+| M.2 storage | Validate the selected motherboard's supported interface |
+| GPU placement | Require a compatible PCIe expansion slot |
+| PSU installation | Validate the case's supported PSU form factor |
+| Power connections | Accept connectors only at their compatible sockets |
+| Occupied slots | Prevent duplicate installations |
+| Required components | Prevent completion while mandatory components are missing |
+
+### Important design principle
+
+Do not enforce an arbitrary installation order.
+
+For example, RAM may be installed before the CPU when the motherboard is accessible and the simulated configuration permits it. However, a CPU cooler cannot be installed before the CPU.
+
+Dependencies should represent real installation requirements, not merely a fixed sequence of tutorial steps.
+
+## 6.5 Connection Mode
+
+The application must distinguish between physically installing a component and connecting its power.
+
+### Required connection tasks
+
+- Connect the motherboard's required main power connector.
+- Connect the CPU power connector when required by the selected configuration.
+- Connect the GPU power connector when the selected GPU requires one.
+
+### Interaction behavior
+
+- Highlight compatible connector sockets.
+- Allow the user to select a cable and a target socket.
+- Validate the connection type.
+- Show a confirmation when a connection is correct.
+- Explain why an incompatible connection is rejected.
+- Track required connections separately from installed components.
+
+For the MVP, connection behavior can be represented through interactive cable endpoints or clearly labeled connector illustrations. Real electrical simulation is not required.
+
+## 6.6 Progress Tracking
+
+Progress must reflect actual completion, not just the number of clicks.
+
+The application should track:
+
+- Components successfully installed.
+- Required connections completed.
+- Mandatory assembly requirements remaining.
+- Current learning mode.
+- Incorrect attempts in Challenge Mode.
+- Quiz completion status.
+
+The progress indicator should be derived from a documented set of required tasks.
+
+Example:
+
+If a build contains eight required installation tasks and two required connection tasks, completing five installation tasks and one connection task represents six of ten tasks completed, or 60%.
+
+The exact task list must be defined by the selected build configuration.
+
+## 6.7 Undo, Reset, and Save Progress
+
+### Undo
+- Revert the most recent successful assembly action.
+- Restore the previous valid state.
+- Update progress accordingly.
+- Avoid leaving duplicate or invalid component states.
+
+### Reset
+- Restore the assembly to its initial state.
+- Clear installed components and completed connections.
+- Reset the relevant challenge session statistics.
+- Ask for confirmation before discarding a substantial amount of progress.
+
+### Save Progress
+- Automatically save relevant session state to browser LocalStorage.
+- Restore the latest valid saved state when the application is reopened.
+- Save installed components, connections, mode, and relevant progress information.
+- Handle missing or invalid saved data gracefully.
+
+Challenge scoring and session history should have clearly defined reset behavior so users cannot accidentally receive misleading results.
+
+---
+
+# 7. Visual Design and Interaction Requirements
+
+## 7.1 Design Direction
+
+PC Builder Lab should resemble a modern hardware-learning simulator rather than a generic college project or administrative dashboard.
+
+The visual style should communicate:
+- Technical accuracy.
+- Real hardware.
+- Hands-on experimentation.
+- Professional educational software.
+- Clear, understandable interactions.
+
+## 7.2 Proposed Visual Palette
+
+| Purpose | Color |
+|---|---|
+| Primary background | `#171D2B` |
+| Secondary surfaces | `#262F42` |
+| Successful interactions | `#31C5A1` |
+| Warnings and errors | `#F4B75E` |
+| Light surfaces and text | `#F5F7FB` |
+
+Use the colors consistently. Warning and error states should also include text and recognizable icons rather than relying on color alone.
+
+## 7.3 Realistic Hardware Visuals
+
+Visual quality is a major product requirement.
+
+The motherboard, CPU, cooler, RAM, SSD, GPU, PSU, and case must look recognizable and proportionally consistent.
+
+Avoid:
+- Generic geometric blocks pretending to be hardware.
+- Cartoon-like component illustrations.
+- Inconsistent perspective between components.
+- Unclear installation positions.
+- Excessive glow, gradients, or decorative effects.
+- Visual effects that obscure hardware details.
+
+### Recommended asset strategy
+
+Create a consistent collection of layered SVG illustrations for the initial configuration.
+
+Each asset should:
+- Have a consistent visual perspective.
+- Use accurate recognizable hardware features.
+- Support transparent backgrounds.
+- Have documented dimensions and placement anchors.
+- Be easy to position and animate independently.
+
+Use licensed reference images and manufacturer documentation to inform the artwork. Record attribution and license requirements for third-party assets.
+
+The simulator should favor a clear, detailed, isometric or angled 2D cutaway view over a flat collection of unrelated component pictures.
+
+**Visual acceptance criterion:** A student should be able to recognize the major components and understand their installation positions without depending entirely on labels.
+
+## 7.4 Interaction Design
+
+Use restrained animations for:
+- Selecting components.
+- Highlighting valid target locations.
+- Snapping components into place.
+- Confirming successful installation.
+- Displaying validation errors.
+- Updating progress.
+
+Animations must support understanding and should never slow down the learning process.
+
+Provide click-to-select placement as an alternative to drag-and-drop. Essential assembly actions should also be accessible through keyboard-operable controls.
+
+---
+
+# 8. Information Architecture and Screens
+
+## 8.1 Home Screen
+
+**Purpose:** Introduce the platform and help users start quickly.
+
+Elements:
+- PC Builder Lab branding.
+- Brief product description.
+- Assembly preview.
+- Three learning mode options.
+- Continue saved session option.
+- Short learning objectives.
+
+## 8.2 Learn Screen
+
+Elements:
+- Component categories.
+- Component selection list.
+- Hardware illustration.
+- Component name and function.
+- Installation location.
+- Compatibility notes.
+- Previous and Next navigation.
+
+## 8.3 Assembly Screen
+
+Elements:
+- Central assembly canvas.
+- Case and installed components.
+- Component library.
+- Selected-component information.
+- Valid-slot highlighting.
+- Guided instructions or hints.
+- Assembly progress.
+- Undo and Reset controls.
+
+## 8.4 Connection Screen or Stage
+
+Elements:
+- Visible installed components.
+- Connector selection.
+- Compatible connection targets.
+- Connection status.
+- Missing connection indicators.
+- Contextual instructions.
+
+This can be integrated into the assembly screen rather than implemented as a separate page.
+
+## 8.5 Assessment Screen
+
+Elements:
+- One question at a time or a compact question list.
+- Multiple-choice answers.
+- Question progress.
+- Submit and navigation controls.
+- Final submission confirmation when appropriate.
+
+Questions should cover component purpose, placement, compatibility, and assembly dependencies.
+
+## 8.6 Results Screen
+
+Elements:
+- Completion status.
+- Total score.
+- Correct installations.
+- Incorrect attempts.
+- Connection completion.
+- Knowledge quiz results.
+- Concepts to review.
+- Restart Challenge and Return Home actions.
+
+The results screen should distinguish between assembly completion and quiz performance.
+
+---
+
+# 9. Assessment and Scoring
+
+## 9.1 Scoring Model
+
+Challenge Mode will use a 100-point assessment.
+
+| Assessment category | Weight |
+|---|---:|
+| Correct component installation | 60 points |
+| Required power connections | 20 points |
+| Hardware knowledge quiz | 20 points |
+| **Total** | **100 points** |
+
+The implementation must define how points are awarded within each category.
+
+For example, installation points can be distributed across required component placements, connection points across mandatory connections, and quiz points across correctly answered questions.
+
+Incorrect attempts may be recorded without permanently preventing a successful build.
+
+Guided Mode should remain penalty-free.
+
+## 9.2 Results Calculation
+
+The result must include:
+- Number of required components installed.
+- Number of required connections completed.
+- Number of incorrect attempts.
+- Quiz score.
+- Total points earned.
+- Whether all mandatory assembly tasks were completed.
+
+A high quiz score must not falsely imply that the assembly is complete. Conversely, completing the assembly must not automatically imply mastery of the knowledge quiz.
+
+---
+
+# 10. Technical Architecture
+
+## 10.1 Recommended Technology Stack
+
+| Technology | Responsibility |
+|---|---|
+| React | UI components and screen composition |
+| TypeScript | Typed component definitions and assembly logic |
+| Vite | Development server and production build |
+| Konva / React Konva | Interactive 2D assembly canvas |
+| Tailwind CSS | Responsive styling |
+| Zustand | Optional centralized session state |
+| Lucide | Interface icons |
+| LocalStorage | Local session persistence |
+| Vitest | Unit testing |
+| Playwright | Optional end-to-end testing |
+
+All core features should work without a server-side API.
+
+## 10.2 Architecture Principles
+
+Keep the product divided into three layers.
+
+### Presentation Layer
+Responsible for screens, component cards, canvas rendering, feedback messages, and navigation.
+
+### Simulation Layer
+Responsible for installation rules, compatibility checks, component placement, connection validation, scoring, and progress calculations.
+
+### Data Layer
+Responsible for component definitions, build configuration, quiz questions, and locally saved sessions.
+
+The simulation engine must not depend on React rendering details. This separation makes the rules easier to test and maintain.
+
+## 10.3 Suggested Project Structure
+
+```text
+pc-builder-lab/
+├── public/
+│   └── assets/
+│       ├── case.svg
+│       ├── motherboard.svg
+│       ├── cpu.svg
+│       ├── cooler.svg
+│       ├── ram.svg
+│       ├── ssd.svg
+│       ├── gpu.svg
+│       └── psu.svg
+├── src/
+│   ├── components/
+│   │   ├── ComponentCard.tsx
+│   │   ├── LearningPanel.tsx
+│   │   ├── ProgressBar.tsx
+│   │   └── FeedbackMessage.tsx
+│   ├── simulator/
+│   │   ├── AssemblyCanvas.tsx
+│   │   ├── ComponentSprite.tsx
+│   │   ├── DropZone.tsx
+│   │   ├── ConnectionLayer.tsx
+│   │   └── assemblyRules.ts
+│   ├── features/
+│   │   ├── learn/
+│   │   ├── assembly/
+│   │   ├── challenge/
+│   │   ├── assessment/
+│   │   └── results/
+│   ├── data/
+│   │   ├── components.ts
+│   │   ├── buildConfig.ts
+│   │   └── quiz.ts
+│   ├── store/
+│   │   └── assemblyStore.ts
+│   ├── utils/
+│   │   ├── scoring.ts
+│   │   └── persistence.ts
+│   ├── App.tsx
+│   └── main.tsx
+├── tests/
+│   ├── assemblyRules.test.ts
+│   ├── scoring.test.ts
+│   └── persistence.test.ts
+├── package.json
+└── README.md
+```
+
+This structure is a recommendation; the implementation may use a simpler arrangement if it remains maintainable.
+
+## 10.4 Data Model
+
+A component definition should describe the component independently of the current session.
+
+Example:
+
+```ts
+type HardwareComponent = {
+  id: string;
+  name: string;
+  category: string;
+  targetSlot: string;
+  description: string;
+  prerequisites: string[];
+  compatibility: Record<string, string[]>;
+  assetPath: string;
+};
+```
+
+The build configuration should define supported sockets, memory generations, expansion slots, connectors, and other compatibility details.
+
+The current assembly state should separately store installed component IDs, occupied slots, completed connections, mode, and progress.
+
+Do not store installation status permanently inside shared component definitions. The same component definition may be reused across multiple sessions.
+
+## 10.5 Persistence
+
+LocalStorage should store a versioned session representation.
+
+The application must:
+- Validate saved data before restoring it.
+- Handle outdated or malformed sessions.
+- Avoid storing unnecessary duplicate state.
+- Recalculate derived progress from the restored assembly.
+- Provide a safe way to start a new build.
+
+No account system or cloud database is required for the MVP.
+
+---
+
+# 11. Functional Acceptance Criteria
+
+The following behaviors must be verified before release.
+
+### Component placement
+- A CPU cannot be installed in a RAM slot.
+- A motherboard cannot be installed in an unrelated case location.
+- An incompatible CPU and motherboard combination is rejected.
+- Unsupported RAM generation is rejected.
+- A cooler cannot be installed before its required CPU.
+- A slot cannot accept duplicate components.
+- Valid components snap into their designated locations.
+
+### Connections
+- Incompatible connectors are rejected.
+- Required motherboard power connections are tracked.
+- Required CPU and GPU power connections depend on the selected configuration.
+- The assembly cannot be marked complete while required connections are missing.
+
+### State management
+- Undo restores the previous valid state.
+- Reset clears the assembly correctly.
+- Progress changes after valid installations and removals.
+- Saved progress restores correctly.
+- Malformed saved data does not crash the application.
+
+### Assessment
+- Challenge Mode records incorrect attempts.
+- Guided Mode does not penalize learning mistakes.
+- Scores reflect the documented scoring rules.
+- Results distinguish assembly completion from quiz performance.
+
+### Accessibility and usability
+- Users can select components without dragging.
+- Essential actions can be operated through keyboard controls.
+- Feedback is understandable without relying on color alone.
+- The interface remains usable on supported laptop, tablet, and smaller screens.
+
+---
+
+# 12. Non-Functional Requirements
+
+## Performance
+- Load the main interface without unnecessary delays.
+- Keep drag interactions responsive.
+- Avoid repeatedly rendering unrelated UI components during canvas interactions.
+- Optimize SVG assets and animation complexity.
+- Avoid unnecessary network dependencies after the application is loaded.
+
+## Reliability
+- Invalid actions must not corrupt assembly state.
+- State changes must be deterministic.
+- Reset and Undo must behave consistently.
+- Saved progress must be validated before use.
+
+## Accessibility
+- Provide keyboard-operable alternatives to drag-and-drop.
+- Use readable text sizes and adequate contrast.
+- Provide meaningful labels for controls.
+- Announce important status changes in accessible UI elements.
+- Avoid using color as the sole indicator of success or failure.
+
+## Responsiveness
+- Prioritize desktop and laptop use for the assembly workspace.
+- Support tablet layouts.
+- Provide a usable smaller-screen experience without requiring precision dragging.
+- Adapt the component panel and information panel to available screen space.
+
+## Maintainability
+- Keep compatibility rules separate from presentation.
+- Use typed component definitions.
+- Test the assembly and scoring engines independently.
+- Document the initial hardware configuration and asset licenses.
+
+---
+
+# 13. Development Plan
+
+## Phase 1: Foundation
+
+- Set up React, TypeScript, and Vite.
+- Implement the design system and navigation.
+- Define component and build configuration data.
+- Create the initial screen layouts.
+
+**Deliverable:** A functional interface with the planned screens.
+
+## Phase 2: Hardware Visuals
+
+- Create the case illustration.
+- Create the motherboard and component assets.
+- Define installation zones and placement anchors.
+- Integrate the illustrations into the canvas.
+
+**Deliverable:** A visually consistent, recognizable PC assembly workspace.
+
+## Phase 3: Assembly Engine
+
+- Implement component selection.
+- Implement drag-and-drop and click-to-place.
+- Implement slot validation.
+- Implement compatibility and dependency rules.
+- Add success and error feedback.
+- Add Undo, Reset, and progress tracking.
+
+**Deliverable:** A working guided assembly simulation.
+
+## Phase 4: Connection Mode
+
+- Add connector assets and connection targets.
+- Validate required power connections.
+- Track connection completion.
+- Add missing-connection feedback.
+
+**Deliverable:** A complete simulated installation and connection workflow.
+
+## Phase 5: Learning and Assessment
+
+- Complete Learn Mode.
+- Add guided instructions.
+- Implement Challenge Mode.
+- Add the quiz and scoring engine.
+- Create the results screen.
+
+**Deliverable:** A complete learning and assessment experience.
+
+## Phase 6: Persistence and Quality Assurance
+
+- Save and restore sessions.
+- Test compatibility rules.
+- Test Undo and Reset.
+- Test scoring.
+- Verify accessibility and responsive layouts.
+- Optimize visuals and performance.
+
+**Deliverable:** A tested MVP ready for demonstration and deployment.
+
+---
+
+# 14. Risks and Mitigations
+
+| Risk | Mitigation |
+|---|---|
+| Hardware visuals look generic | Establish a consistent illustration style and review assets before implementation |
+| Compatibility rules are inaccurate | Base the initial configuration on documented manufacturer specifications |
+| Drag-and-drop feels difficult | Provide click-to-select placement and keyboard alternatives |
+| Scope becomes too large | Support one predefined build configuration first |
+| Progress becomes inconsistent | Derive progress from the validated assembly state |
+| Scoring becomes confusing | Define scoring rules before implementing Challenge Mode |
+| Third-party artwork has unclear rights | Prefer original assets and document all external licenses |
+| Users mistake the simulator for a real compatibility guarantee | Clearly explain that the simulator teaches selected assembly rules, not complete real-world hardware validation |
+
+---
+
+# 15. Future Roadmap
+
+Future releases may consider the following features after the MVP is successful.
+
+### Version 1.1 — Expanded Learning
+- Additional component configurations.
+- More quiz questions.
+- Improved explanations and contextual hints.
+- Additional assembly scenarios.
+
+### Version 1.2 — Advanced Hardware Concepts
+- Additional motherboard layouts.
+- More storage and expansion configurations.
+- Improved cable-management exercises.
+- Expanded power-connector learning.
+
+### Version 2.0 — Advanced Simulation
+- Optional 3D assembly.
+- Additional case and component configurations.
+- More advanced compatibility scenarios.
+- Teacher-oriented assessment tools.
+- Optional online progress synchronization.
+
+These are potential future directions, not commitments for the first release.
+
+---
+
+# 16. Final Product Definition
+
+**PC Builder Lab is an interactive, browser-based computer hardware learning platform that enables students to explore components, assemble a virtual desktop PC, understand basic compatibility rules, complete simulated power connections, and assess their knowledge.**
+
+Its core value is the combination of realistic component visuals, meaningful interaction, accurate validation, and immediate educational feedback.
+
+The MVP will use a single predefined desktop configuration, an interactive 2D assembly canvas, three learning modes, a rule-based simulation engine, a knowledge quiz, and local progress storage.
+
+The project will be successful when a beginner can complete the experience, identify the major components, explain their purposes, recognize basic installation mistakes, and describe the main stages of PC assembly.
+
+**Final product principle:** Every interaction should help the student understand real computer hardware—not merely make the interface look interactive.
