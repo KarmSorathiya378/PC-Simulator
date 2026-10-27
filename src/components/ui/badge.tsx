@@ -1,26 +1,29 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
+import { themeTokens } from "@/styles/theme";
 
 const badgeVariants = cva(
-  "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold tracking-tight transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold tracking-tight transition-all duration-150 backdrop-blur-md select-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]",
   {
     variants: {
       variant: {
         default:
-          "border-transparent bg-primary text-primary-foreground shadow-2xs",
+          "border-sky-500/35 bg-sky-950/50 text-sky-300 shadow-xs shadow-sky-500/25",
         secondary:
-          "border-border/80 bg-secondary text-secondary-foreground",
+          "border-border/80 bg-secondary/80 text-secondary-foreground shadow-2xs",
         warm:
-          "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/50 dark:text-amber-300",
+          "border-amber-500/35 bg-amber-950/50 text-amber-300 shadow-xs shadow-amber-500/25",
         success:
-          "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/50 dark:text-emerald-300",
+          "border-emerald-500/35 bg-emerald-950/50 text-emerald-300 shadow-xs shadow-emerald-500/25",
         destructive:
-          "border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-900/60 dark:bg-rose-950/50 dark:text-rose-300",
+          "border-rose-500/35 bg-rose-950/50 text-rose-300 shadow-xs shadow-rose-500/25",
         outline:
-          "border-border bg-card/80 text-foreground",
+          "border-border/80 bg-card/60 text-foreground",
         mint:
-          "border-teal-200 bg-teal-50 text-teal-900 dark:border-teal-900/60 dark:bg-teal-950/50 dark:text-teal-300",
+          "border-teal-500/35 bg-teal-950/50 text-teal-300 shadow-xs shadow-teal-500/25",
+        violet:
+          "border-indigo-500/35 bg-indigo-950/50 text-indigo-300 shadow-xs shadow-indigo-500/25",
       },
       size: {
         default: "px-2.5 py-0.5 text-xs",
@@ -42,13 +45,22 @@ export interface BadgeProps
   dotColor?: string;
 }
 
-function Badge({ className, variant, size, dot, dotColor, children, ...props }: BadgeProps) {
+function Badge({ className, variant, size, dot, dotColor, children, style, ...props }: BadgeProps) {
   return (
-    <div className={cn(badgeVariants({ variant, size }), className)} {...props}>
+    <div
+      style={{
+        borderRadius: themeTokens.radii.pill,
+        ...style,
+      }}
+      className={cn(badgeVariants({ variant, size }), className)}
+      {...props}
+    >
       {dot && (
         <span
-          className={cn("size-1.5 rounded-full shrink-0", dotColor || "bg-current opacity-75")}
-          aria-hidden="true"
+          className={cn(
+            "size-1.5 rounded-full shrink-0",
+            dotColor || (variant === "warm" ? "bg-amber-400" : variant === "success" ? "bg-emerald-400" : variant === "destructive" ? "bg-rose-400" : "bg-sky-400")
+          )}
         />
       )}
       {children}
@@ -57,3 +69,4 @@ function Badge({ className, variant, size, dot, dotColor, children, ...props }: 
 }
 
 export { Badge, badgeVariants };
+export default Badge;

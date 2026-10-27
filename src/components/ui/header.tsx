@@ -11,19 +11,22 @@ import {
   Moon, 
   Menu, 
   X,
-  Sparkles
+  Sparkles,
+  Box
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { BrandBadge } from "@/components/ui/brand-badge";
+import { Logo } from "@/components/Logo";
 import { useTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
-  { path: "/learn", label: "Learn", icon: BookOpen, description: "Component anatomy & specs" },
-  { path: "/guided", label: "Guided Assembly", icon: Wrench, description: "Step-by-step build guidance" },
-  { path: "/challenge", label: "Challenge", icon: Trophy, description: "Score-based assembly test" },
-  { path: "/connection", label: "Connection", icon: Cable, description: "Power & cable routing" },
-  { path: "/results", label: "Results", icon: BarChart3, description: "Performance breakdown" },
+  { path: "/guided", label: "3D Guided Lab", badge: "Interactive", icon: Wrench, description: "Step-by-step 3D chassis assembly" },
+  { path: "/learn", label: "Hardware Anatomy", icon: BookOpen, description: "Component specifications & pinouts" },
+  { path: "/challenge", label: "Challenge Exam", badge: "100 Pts", icon: Trophy, description: "Independent assembly assessment" },
+  { path: "/connection", label: "Cabling & Rails", icon: Cable, description: "Modular power delivery & headers" },
+  { path: "/results", label: "Scorecard", icon: BarChart3, description: "Telemetry & competency review" },
 ];
 
 export const Header: React.FC = () => {
@@ -37,138 +40,151 @@ export const Header: React.FC = () => {
   }, [location.pathname]);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/80 bg-background/90 backdrop-blur-md transition-colors">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Brand & Logo */}
-        <div className="flex items-center gap-6">
-          <Link 
-            to="/" 
-            className="group flex items-center gap-2.5 transition-transform duration-150 active:scale-95"
-            aria-label="PC Builder Lab Home"
-          >
-            <div className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm shadow-primary/25 transition-transform group-hover:scale-105">
-              <Cpu className="size-5" />
-            </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <span className="text-base font-bold tracking-tight text-foreground">
-                  PC Builder Lab
-                </span>
-                <Badge variant="secondary" className="hidden px-1.5 py-0 text-[10px] font-medium tracking-wide sm:inline-flex">
-                  Interactive
-                </Badge>
-              </div>
-              <span className="hidden text-[11px] text-muted-foreground sm:inline-block">
-                Virtual Hardware Simulator
-              </span>
-            </div>
-          </Link>
+    <header className="sticky top-0 z-50 w-full border-b border-border/80 glass-surface transition-colors duration-200">
+      <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        {/* Brand & Logo with Hardware Status Pill */}
+        <div className="flex items-center gap-4 sm:gap-6">
+          <Logo size="default" withLink withTagline={false} />
 
-          {/* Desktop Mode Navigation */}
-          <nav className="hidden items-center gap-1 md:flex" aria-label="Main Navigation">
-            {NAV_ITEMS.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path || (item.path === "/guided" && location.pathname === "/assembly");
-              return (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={cn(
-                    "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-150",
-                    isActive
-                      ? "bg-secondary text-foreground font-semibold shadow-xs"
-                      : "text-muted-foreground hover:bg-muted/70 hover:text-foreground"
-                  )}
-                >
-                  <Icon className={cn("size-4", isActive ? "text-primary" : "text-muted-foreground")} />
-                  <span>{item.label}</span>
-                </NavLink>
-              );
-            })}
-          </nav>
+          <div className="hidden lg:flex items-center">
+            <BrandBadge variant="emerald" pulse>
+              3D Engine Ready
+            </BrandBadge>
+          </div>
         </div>
 
-        {/* Right Actions: Theme Toggle & CTA */}
+        {/* Desktop Mode Navigation Dock */}
+        <nav
+          className="hidden md:flex items-center gap-1 p-1 rounded-xl border border-border/60 bg-secondary/40 backdrop-blur-md select-none"
+          aria-label="Main Navigation"
+        >
+          {NAV_ITEMS.map((item) => {
+            const Icon = item.icon;
+            const isActive =
+              location.pathname === item.path ||
+              (item.path === "/guided" && location.pathname === "/assembly");
+
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={cn(
+                  "relative flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-tight transition-all duration-200 pressable-element focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                  isActive
+                    ? "bg-card text-primary shadow-xs border border-primary/30"
+                    : "text-muted-foreground hover:text-foreground hover:bg-card/60"
+                )}
+              >
+                <Icon
+                  className={cn(
+                    "size-3.5 transition-colors",
+                    isActive ? "text-primary" : "text-muted-foreground"
+                  )}
+                />
+                <span>{item.label}</span>
+                {item.badge && !isActive && (
+                  <span className="hidden xl:inline-flex rounded bg-primary/10 text-primary text-[9px] px-1 font-mono font-bold">
+                    {item.badge}
+                  </span>
+                )}
+              </NavLink>
+            );
+          })}
+        </nav>
+
+        {/* Right Actions: Launch CTA & Theme Switcher */}
         <div className="flex items-center gap-2 sm:gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
+          <Link to="/guided" className="hidden sm:inline-flex">
+            <Button
+              size="sm"
+              className="gap-2 font-bold shadow-xs shadow-primary/25 btn-primary pressable-element focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              <Box className="size-3.5" />
+              <span>Launch 3D Lab</span>
+            </Button>
+          </Link>
+
+          {/* Theme Switcher Button */}
+          <button
+            type="button"
             onClick={toggleTheme}
-            className="size-9 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            title={isDark ? "Switch to light mode" : "Switch to dark mode"}
-            aria-label="Toggle theme"
+            aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+            title={isDark ? "Switch to light theme" : "Switch to dark theme"}
+            className="flex size-9 items-center justify-center rounded-lg border border-border/80 bg-card text-muted-foreground hover:text-foreground hover:bg-muted/70 transition-colors pressable-element focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer select-none"
           >
             {isDark ? (
               <Sun className="size-4 text-amber-400 transition-transform duration-200 rotate-0 hover:rotate-45" />
             ) : (
-              <Moon className="size-4 text-slate-700 transition-transform duration-200 rotate-0 hover:-rotate-12" />
+              <Moon className="size-4 text-foreground/80 transition-transform duration-200 rotate-0 hover:-rotate-12" />
             )}
-          </Button>
-
-          <Link to="/guided" className="hidden sm:inline-flex">
-            <Button size="sm" className="gap-1.5 shadow-sm active:scale-95 transition-transform">
-              <Sparkles className="size-3.5" />
-              <span>Start Assembly</span>
-            </Button>
-          </Link>
+          </button>
 
           {/* Mobile Menu Button */}
-          <Button
-            variant="ghost"
-            size="icon"
+          <button
+            type="button"
             onClick={() => setMobileMenuOpen((open) => !open)}
-            className="size-9 md:hidden text-muted-foreground hover:text-foreground"
+            aria-expanded={mobileMenuOpen}
+            className="flex size-9 items-center justify-center rounded-lg border border-border/80 bg-card text-muted-foreground hover:text-foreground md:hidden pressable-element cursor-pointer"
             aria-label="Toggle navigation menu"
           >
-            {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-          </Button>
+            {mobileMenuOpen ? <X className="size-4" /> : <Menu className="size-4" />}
+          </button>
         </div>
       </div>
 
       {/* Mobile Navigation Drawer */}
       {mobileMenuOpen && (
-        <div className="border-b border-border bg-background px-4 pt-2 pb-4 shadow-lg md:hidden animate-in fade-in slide-in-from-top-2 duration-150">
+        <div className="border-b border-border bg-card/95 backdrop-blur-xl px-4 pt-2 pb-4 shadow-xl md:hidden animate-in fade-in slide-in-from-top-2 duration-150 space-y-2">
+          <div className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground px-2 pb-1">
+            Navigation Labs
+          </div>
           <div className="space-y-1">
-            <NavLink
-              to="/"
-              className={cn(
-                "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                location.pathname === "/"
-                  ? "bg-secondary text-foreground font-semibold"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-            >
-              <Cpu className="size-4 text-primary" />
-              <span>Overview & Home</span>
-            </NavLink>
             {NAV_ITEMS.map((item) => {
               const Icon = item.icon;
-              const isActive = location.pathname === item.path || (item.path === "/guided" && location.pathname === "/assembly");
+              const isActive =
+                location.pathname === item.path ||
+                (item.path === "/guided" && location.pathname === "/assembly");
+
               return (
                 <NavLink
                   key={item.path}
                   to={item.path}
+                  onClick={() => setMobileMenuOpen(false)}
                   className={cn(
-                    "flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                    "flex items-start gap-3 rounded-lg p-2.5 transition-colors pressable-element",
                     isActive
-                      ? "bg-secondary text-foreground font-semibold"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      ? "bg-primary/10 border border-primary/25 text-primary"
+                      : "text-foreground hover:bg-muted"
                   )}
                 >
-                  <div className="flex items-center gap-2.5">
-                    <Icon className={cn("size-4", isActive ? "text-primary" : "text-muted-foreground")} />
-                    <span>{item.label}</span>
+                  <div
+                    className={cn(
+                      "flex size-8 shrink-0 items-center justify-center rounded-md",
+                      isActive ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground"
+                    )}
+                  >
+                    <Icon className="size-4" />
                   </div>
-                  <span className="text-xs text-muted-foreground">{item.description}</span>
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold">{item.label}</span>
+                      {item.badge && (
+                        <Badge variant="outline" className="text-[9px] px-1 py-0 font-mono">
+                          {item.badge}
+                        </Badge>
+                      )}
+                    </div>
+                    <span className="text-xs text-muted-foreground">{item.description}</span>
+                  </div>
                 </NavLink>
               );
             })}
           </div>
-          <div className="mt-4 pt-3 border-t border-border">
-            <Link to="/guided" className="w-full block">
-              <Button className="w-full gap-2">
-                <Sparkles className="size-4" />
-                <span>Launch Virtual Assembly</span>
+          <div className="pt-2">
+            <Link to="/guided" onClick={() => setMobileMenuOpen(false)}>
+              <Button className="w-full gap-2 font-semibold">
+                <Box className="size-4" />
+                <span>Launch Interactive 3D Lab</span>
               </Button>
             </Link>
           </div>

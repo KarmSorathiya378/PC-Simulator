@@ -1,15 +1,38 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PC Builder Lab</title>
+    <meta name="theme-color" content="#090D16" />
+    <meta name="color-scheme" content="dark" />
+    <title>PC Builder Lab — Interactive 3D PC Hardware Engineering Simulator</title>
+    <meta
+      name="description"
+      content="Master desktop computer architecture with PC Builder Lab. An award-winning interactive 3D PC simulator featuring real-time socket compatibility, photorealistic procedural hardware rendering, guided assembly steps, and wiring."
+    />
+    <meta
+      name="keywords"
+      content="PC simulator, computer builder, 3D PC building, AM5, DDR5, PCIe 4.0, hardware engineering, interactive 3D simulation"
+    />
+    <meta property="og:title" content="PC Builder Lab — Interactive 3D PC Simulator" />
+    <meta
+      property="og:description"
+      content="Step inside a photorealistic 3D virtual chassis. Learn hardware assembly and component compatibility in real time."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Distinctive Typographic Foundation: Space Grotesk (Display) + Inter (UI/Body) + JetBrains Mono (Code/Specs) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
-  <body class="min-h-screen bg-background text-foreground antialiased">
+  <body class="min-h-screen bg-background text-foreground antialiased selection:bg-cyan-500/25 selection:text-cyan-200">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

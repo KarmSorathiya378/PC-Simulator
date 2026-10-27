@@ -1,139 +1,167 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
 @import "tailwindcss";
+
+/* ==========================================================================
+   PC BUILDER LAB — GLOBAL DESIGN SYSTEM FOUNDATION
+   Awwwards / Pinterest-grade Dark Premium Tech & Cyber-Architecture
+   Tailwind CSS v4 + React Three Fiber + shadcn/ui Foundation
+   ========================================================================== */
 
 @layer base {
   :root {
-    /* Primary Light Canvas - Warm Architectural Paper */
-    --background: #FBF9F5;
-    --background-subtle: #F4EFE6;
-    --foreground: #181614;
+    /* Primary Dark Slate Obsidian Canvas */
+    --background: #090D16;
+    --background-subtle: #0F1626;
+    --foreground: #F8FAFC;
 
-    /* Card & Surface Tokens */
-    --card: #FFFFFF;
-    --card-foreground: #181614;
+    /* Card & Layer Surfaces */
+    --card: #111827;
+    --card-foreground: #F8FAFC;
 
-    --popover: #FFFFFF;
-    --popover-foreground: #181614;
+    --popover: #0F172A;
+    --popover-foreground: #F8FAFC;
 
-    /* Primary Accent - Precision Electric Cobalt / Indigo */
-    --primary: #2552E0;
+    /* Primary Accent: Electric Cyan-Cobalt */
+    --primary: #0EA5E9;
     --primary-foreground: #FFFFFF;
-    --primary-hover: #1B42C4;
-    --primary-active: #1535A3;
-    --primary-light: #EEF3FF;
-    --primary-border: #C7D8FC;
+    --primary-hover: #38BDF8;
+    --primary-active: #0284C7;
+    --primary-light: #082F49;
+    --primary-border: #0369A1;
 
-    /* Complementary Warm Accent - Hardware Copper / Amber */
-    --accent-warm: #D97706;
-    --accent-warm-foreground: #78350F;
-    --accent-warm-light: #FEF3C7;
-    --accent-warm-border: #FDE68A;
+    /* Complementary Hardware Accent: Gold / Amber */
+    --accent-warm: #F59E0B;
+    --accent-warm-foreground: #FEF3C7;
+    --accent-warm-light: #451A03;
+    --accent-warm-border: #92400E;
+
+    /* Neon Cyber Violet Accent */
+    --accent-violet: #8B5CF6;
+    --accent-violet-foreground: #EDE9FE;
+    --accent-violet-light: #2E1065;
+    --accent-violet-border: #5B21B6;
 
     /* Secondary & Muted Surfaces */
-    --secondary: #F3ECE0;
-    --secondary-foreground: #2D271E;
+    --secondary: #1E293B;
+    --secondary-foreground: #E2E8F0;
 
-    --muted: #EDE6D8;
-    --muted-foreground: #5A5346;
+    --muted: #162032;
+    --muted-foreground: #94A3B8;
 
-    --accent: #F4EFE6;
-    --accent-foreground: #181614;
+    --accent: #1E293B;
+    --accent-foreground: #F8FAFC;
 
-    /* Semantic Alerts */
-    --success: #059669;
-    --success-foreground: #064E3B;
-    --success-light: #ECFDF5;
-    --success-border: #A7F3D0;
-
-    --warning: #D97706;
-    --warning-foreground: #78350F;
-    --warning-light: #FFFBEB;
-    --warning-border: #FDE68A;
-
-    --destructive: #DC2626;
-    --destructive-foreground: #FFFFFF;
-    --destructive-light: #FEF2F2;
-    --destructive-border: #FECACA;
-
-    /* Architectural Hairlines & Dividers */
-    --border: #E8E0D2;
-    --border-subtle: #F2ECE0;
-    --border-strong: #D5CBB9;
-    --input: #E8E0D2;
-    --ring: #2552E0;
-
-    /* Geometry */
-    --radius: 0.875rem;
-
-    /* Ambient Elevation Shadows */
-    --shadow-diffuse-xs: 0 1px 2px rgba(28, 22, 14, 0.04);
-    --shadow-diffuse-sm: 0 1px 3px rgba(28, 22, 14, 0.05), 0 4px 10px -2px rgba(28, 22, 14, 0.04);
-    --shadow-diffuse-md: 0 3px 8px rgba(28, 22, 14, 0.06), 0 12px 24px -4px rgba(28, 22, 14, 0.08);
-    --shadow-diffuse-lg: 0 6px 16px rgba(28, 22, 14, 0.08), 0 20px 40px -6px rgba(28, 22, 14, 0.10);
-    --shadow-inner-bevel: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 2px rgba(28, 22, 14, 0.04);
-  }
-
-  .dark {
-    --background: #0F1218;
-    --background-subtle: #151A22;
-    --foreground: #F6F5F2;
-
-    --card: #1A212D;
-    --card-foreground: #F6F5F2;
-
-    --popover: #1A212D;
-    --popover-foreground: #F6F5F2;
-
-    --primary: #436BEE;
-    --primary-foreground: #FFFFFF;
-    --primary-hover: #5B7FF5;
-    --primary-active: #3358DA;
-    --primary-light: #182447;
-    --primary-border: #293C75;
-
-    --accent-warm: #F59E0B;
-    --accent-warm-foreground: #FDE68A;
-    --accent-warm-light: #32230B;
-    --accent-warm-border: #5C3E0E;
-
-    --secondary: #222B3A;
-    --secondary-foreground: #F6F5F2;
-
-    --muted: #1E2633;
-    --muted-foreground: #9E998E;
-
-    --accent: #222B3A;
-    --accent-foreground: #F6F5F2;
-
+    /* Semantic Status Badges */
     --success: #10B981;
-    --success-foreground: #6EE7B7;
-    --success-light: #0E2A1F;
-    --success-border: #1A4D39;
+    --success-foreground: #D1FAE5;
+    --success-light: #064E3B;
+    --success-border: #047857;
 
     --warning: #F59E0B;
-    --warning-foreground: #FDE68A;
-    --warning-light: #2B200A;
-    --warning-border: #553C0F;
+    --warning-foreground: #FEF3C7;
+    --warning-light: #451A03;
+    --warning-border: #B45309;
 
     --destructive: #EF4444;
-    --destructive-foreground: #FFFFFF;
-    --destructive-light: #2D1414;
-    --destructive-border: #522020;
+    --destructive-foreground: #FEE2E2;
+    --destructive-light: #450A0A;
+    --destructive-border: #B91C1C;
 
-    --border: #2A3343;
-    --border-subtle: #1F2734;
-    --border-strong: #3A465B;
-    --input: #2A3343;
-    --ring: #436BEE;
+    /* Precision Hairline Borders & Inputs */
+    --border: #1E293B;
+    --border-subtle: #172033;
+    --border-strong: #334155;
+    --input: #1E293B;
+    --ring: #0EA5E9;
 
-    --shadow-diffuse-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
-    --shadow-diffuse-sm: 0 2px 6px rgba(0, 0, 0, 0.25), 0 6px 14px -2px rgba(0, 0, 0, 0.3);
-    --shadow-diffuse-md: 0 4px 12px rgba(0, 0, 0, 0.3), 0 16px 32px -4px rgba(0, 0, 0, 0.4);
-    --shadow-diffuse-lg: 0 8px 24px rgba(0, 0, 0, 0.4), 0 28px 56px -6px rgba(0, 0, 0, 0.5);
-    --shadow-inner-bevel: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 1px 3px rgba(0, 0, 0, 0.3);
+    /* Typography Scale */
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 1.875rem;
+    --text-4xl: 2.25rem;
+    --text-5xl: 3rem;
+
+    /* Spacing Scale */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.25rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --space-10: 2.5rem;
+    --space-12: 3rem;
+    --space-16: 4rem;
+
+    /* Radii System */
+    --radius-xs: 0.375rem;
+    --radius-sm: 0.5rem;
+    --radius: 0.875rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.25rem;
+    --radius-2xl: 1.5rem;
+    --radius-pill: 9999px;
+
+    /* Ambient Depth Shadows */
+    --shadow-diffuse-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-diffuse-sm: 0 2px 8px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.35);
+    --shadow-diffuse-md: 0 4px 16px rgba(0, 0, 0, 0.55), 0 12px 28px -4px rgba(0, 0, 0, 0.45);
+    --shadow-diffuse-lg: 0 8px 32px rgba(0, 0, 0, 0.65), 0 24px 64px -8px rgba(0, 0, 0, 0.55);
+    --shadow-inner-bevel: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 1px 3px rgba(0, 0, 0, 0.4);
+    --shadow-neon-cyan: 0 0 24px rgba(14, 165, 233, 0.35);
+    --shadow-neon-violet: 0 0 24px rgba(139, 92, 246, 0.35);
+    --shadow-neon-gold: 0 0 24px rgba(245, 158, 11, 0.35);
+
+    /* Motion Timing & Physics */
+    --duration-instant: 80ms;
+    --duration-fast: 140ms;
+    --duration-normal: 220ms;
+    --duration-slow: 380ms;
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Optional Light Palette Override */
+  .light {
+    --background: #F8FAFC;
+    --background-subtle: #F1F5F9;
+    --foreground: #0F172A;
+    --card: #FFFFFF;
+    --card-foreground: #0F172A;
+    --popover: #FFFFFF;
+    --popover-foreground: #0F172A;
+    --primary: #0284C7;
+    --primary-foreground: #FFFFFF;
+    --primary-hover: #0369A1;
+    --primary-active: #075985;
+    --primary-light: #E0F2FE;
+    --primary-border: #BAE6FD;
+    --secondary: #F1F5F9;
+    --secondary-foreground: #1E293B;
+    --muted: #E2E8F0;
+    --muted-foreground: #64748B;
+    --accent: #F1F5F9;
+    --accent-foreground: #0F172A;
+    --border: #E2E8F0;
+    --border-subtle: #F1F5F9;
+    --border-strong: #CBD5E1;
+    --input: #E2E8F0;
+    --ring: #0284C7;
+    --shadow-inner-bevel: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 2px rgba(0, 0, 0, 0.05);
   }
 
   * {
     border-color: var(--border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    color-scheme: dark;
   }
 
   body {
@@ -143,15 +171,63 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
-    letter-spacing: -0.011em;
+    letter-spacing: -0.012em;
+    overflow-x: hidden;
+  }
+
+  /* Distinctive Typographic Hierarchy */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    letter-spacing: -0.025em;
+  }
+
+  code, kbd, samp, pre {
+    font-family: var(--font-mono);
+  }
+
+  /* Luminous Selection Styling */
+  ::selection {
+    background-color: rgba(14, 165, 233, 0.3);
+    color: #38BDF8;
+  }
+
+  /* Focus Rings */
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
+  }
+
+  /* Precision Custom Dark Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #090D16;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #1E293B;
+    border-radius: 9999px;
+    border: 2px solid #090D16;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #334155;
   }
 }
 
+/* ==========================================================================
+   TAILWIND v4 @theme DECLARATIONS
+   ========================================================================== */
 @theme {
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, monospace;
+  /* Fonts */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
 
+  /* Custom Colors mapped to CSS variables */
   --color-background: var(--background);
   --color-background-subtle: var(--background-subtle);
   --color-foreground: var(--foreground);
@@ -173,6 +249,9 @@
   --color-accent-warm-foreground: var(--accent-warm-foreground);
   --color-accent-warm-light: var(--accent-warm-light);
   --color-accent-warm-border: var(--accent-warm-border);
+
+  --color-accent-violet: var(--accent-violet);
+  --color-accent-violet-foreground: var(--accent-violet-foreground);
 
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -204,36 +283,77 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
+  /* Brand Neon Accents */
+  --color-neon-cyan: #00F5FF;
+  --color-neon-blue: #0EA5E9;
+  --color-neon-violet: #8B5CF6;
+  --color-neon-pink: #EC4899;
+  --color-circuit-gold: #F59E0B;
+
+  /* Radius Tokens */
+  --radius-2xl: calc(var(--radius) + 8px);
   --radius-xl: calc(var(--radius) + 4px);
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-xs: calc(var(--radius) - 6px);
+
+  /* Keyframe Animations */
+  @keyframes pulse-subtle {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.85; transform: scale(1.02); }
+  }
+
+  @keyframes float-slow {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  --animate-pulse-subtle: pulse-subtle 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-float-slow: float-slow 4s ease-in-out infinite;
+  --animate-glow-pulse: glow-pulse 2.5s ease-in-out infinite;
+  --animate-shimmer: shimmer 2.5s linear infinite;
 }
 
-/* Elevated Architectural Component Styling Utilities */
+/* ==========================================================================
+   REUSABLE COMPONENT & SURFACE CLASSES (FOR LARK, THEO, EMBER, ELLA)
+   ========================================================================== */
+
+/* 1. Glass Surfaces & Panels */
+.glass-panel {
+  background-color: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
 .glass-surface {
-  background-color: rgba(255, 255, 255, 0.85);
+  background-color: rgba(17, 24, 39, 0.75);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
-.dark .glass-surface {
-  background-color: rgba(26, 33, 45, 0.85);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+.glass-dock {
+  background-color: rgba(9, 13, 22, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
-/* Micro-interaction tactile button press (Emil Kowalski design rule) */
-.pressable-element {
-  transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 160ms cubic-bezier(0.16, 1, 0.3, 1), background-color 160ms ease;
-}
-
-.pressable-element:active:not(:disabled) {
-  transform: scale(0.975);
-}
-
-/* Architectural card inner highlight bevel */
+/* 2. Elevated & Interactive Cards */
 .card-elevated {
   background-color: var(--card);
   box-shadow: var(--shadow-inner-bevel), var(--shadow-diffuse-sm);
@@ -242,15 +362,428 @@
 
 .card-elevated:hover {
   box-shadow: var(--shadow-inner-bevel), var(--shadow-diffuse-md);
+  border-color: rgba(14, 165, 233, 0.35);
 }
 
-/* Subtle blueprint grid overlay for canvas and hero backgrounds */
+.card-interactive {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-inner-bevel), var(--shadow-diffuse-xs);
+  transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.card-interactive:hover {
+  transform: translateY(-2px);
+  border-color: rgba(14, 165, 233, 0.45);
+  box-shadow: var(--shadow-inner-bevel), 0 12px 30px -4px rgba(14, 165, 233, 0.18);
+}
+
+.card-interactive:active {
+  transform: translateY(0px) scale(0.99);
+}
+
+.card-glow {
+  background-color: rgba(17, 24, 39, 0.8);
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  box-shadow: 0 0 28px rgba(14, 165, 233, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* 3. Reusable Button Utility Styles */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.3);
+}
+
+.btn-primary:active {
+  transform: scale(0.975);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+  border: 1px solid var(--border);
+  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background-color: #27354A;
+  border-color: var(--border-strong);
+}
+
+.btn-secondary:active {
+  transform: scale(0.975);
+}
+
+.btn-glass {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background-color: rgba(17, 24, 39, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--foreground);
+  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.btn-glass:hover {
+  background-color: rgba(30, 41, 59, 0.8);
+  border-color: rgba(14, 165, 233, 0.4);
+}
+
+.btn-glass:active {
+  transform: scale(0.975);
+}
+
+/* 4. Reusable Badge Utility Styles */
+.badge-neon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.125rem 0.625rem;
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background-color: rgba(8, 47, 73, 0.4);
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  color: #38BDF8;
+  box-shadow: 0 0 12px rgba(14, 165, 233, 0.15);
+  backdrop-filter: blur(8px);
+}
+
+.badge-tech {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.125rem 0.625rem;
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: rgba(30, 41, 59, 0.5);
+  border: 1px solid var(--border);
+  color: var(--muted-foreground);
+  backdrop-filter: blur(8px);
+}
+
+/* 5. Reusable Input Styling */
+.input-tech {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background-color: #0B0F18;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--foreground);
+  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.input-tech:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.25);
+}
+
+.input-tech::placeholder {
+  color: #64748B;
+}
+
+/* 6. Micro-interaction & Tactile Press (Emil Kowalski design rule) */
+.pressable-element {
+  transition: transform 140ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 140ms cubic-bezier(0.16, 1, 0.3, 1), background-color 140ms ease;
+}
+
+.pressable-element:active:not(:disabled) {
+  transform: scale(0.975);
+}
+
+.hover-lift {
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+/* 7. Radiant Neon Glow Utility Classes */
+.glow-cyan {
+  box-shadow: 0 0 25px rgba(6, 182, 212, 0.35);
+}
+
+.glow-violet {
+  box-shadow: 0 0 25px rgba(139, 92, 246, 0.35);
+}
+
+.glow-amber {
+  box-shadow: 0 0 25px rgba(245, 158, 11, 0.35);
+}
+
+.glow-emerald {
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.35);
+}
+
+.glow-danger {
+  box-shadow: 0 0 25px rgba(239, 68, 68, 0.35);
+}
+
+.glow-laser {
+  box-shadow: 0 0 32px rgba(14, 165, 233, 0.45);
+}
+
+/* 8. Text Gradient Utilities */
+.text-gradient-primary {
+  background-image: linear-gradient(135deg, #00F5FF 0%, #0EA5E9 45%, #6366F1 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-gradient-cyan-violet {
+  background-image: linear-gradient(135deg, #38BDF8 0%, #818CF8 50%, #C084FC 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-gradient-violet {
+  background-image: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #D946EF 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-gradient-warm {
+  background-image: linear-gradient(135deg, #FEF08A 0%, #F59E0B 50%, #EA580C 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-gradient-emerald {
+  background-image: linear-gradient(135deg, #6EE7B7 0%, #10B981 50%, #059669 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-gradient-holographic {
+  background-image: linear-gradient(135deg, #38BDF8 0%, #E879F9 50%, #FBBF24 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* 9. Specialized Button Utilities */
+.btn-glow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background-color: var(--primary);
+  color: #FFFFFF;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  box-shadow: 0 0 20px rgba(14, 165, 233, 0.4);
+  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.btn-glow:hover {
+  box-shadow: 0 0 28px rgba(14, 165, 233, 0.6);
+  filter: brightness(1.1);
+}
+
+.btn-glow:active {
+  transform: scale(0.975);
+}
+
+.btn-cyber {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background-color: var(--accent-violet);
+  color: #FFFFFF;
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.35);
+  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.btn-cyber:hover {
+  box-shadow: 0 0 28px rgba(139, 92, 246, 0.55);
+  filter: brightness(1.1);
+}
+
+.btn-cyber:active {
+  transform: scale(0.975);
+}
+
+.btn-warm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background-color: var(--accent-warm);
+  color: #FFFFFF;
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.3);
+  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.btn-warm:hover {
+  box-shadow: 0 0 24px rgba(245, 158, 11, 0.5);
+  filter: brightness(1.1);
+}
+
+.btn-warm:active {
+  transform: scale(0.975);
+}
+
+/* 10. Hardware Blueprint Grid & Matrix Textures */
 .bg-blueprint-dots {
-  background-image: radial-gradient(circle at 1px 1px, rgba(40, 32, 22, 0.08) 1px, transparent 0);
-  background-size: 24px 24px;
-}
-
-.dark .bg-blueprint-dots {
   background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.07) 1px, transparent 0);
   background-size: 24px 24px;
+}
+
+.bg-cyber-grid {
+  background-size: 40px 40px;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+}
+
+.bg-radial-vignette {
+  background: radial-gradient(circle at 50% 20%, rgba(14, 165, 233, 0.12) 0%, transparent 60%);
+}
+
+.bg-holographic-sheen {
+  background-image: linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(139, 92, 246, 0.08) 50%, rgba(245, 158, 11, 0.08) 100%);
+}
+
+/* 11. Rim-Light Accents & Surface Grain (Awwwards Polish) */
+.rim-light {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 -1px 0 rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.rim-light-cyan {
+  box-shadow: inset 0 1px 0 rgba(0, 245, 255, 0.45), 0 0 20px rgba(14, 165, 233, 0.22);
+}
+
+.rim-light-amber {
+  box-shadow: inset 0 1px 0 rgba(254, 240, 138, 0.45), 0 0 20px rgba(245, 158, 11, 0.22);
+}
+
+.rim-light-violet {
+  box-shadow: inset 0 1px 0 rgba(192, 132, 252, 0.45), 0 0 20px rgba(139, 92, 246, 0.22);
+}
+
+.surface-specular {
+  position: relative;
+}
+
+.surface-specular::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.16) 50%, transparent 100%);
+  pointer-events: none;
+}
+
+.subtle-noise {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+
+/* 12. Editorial Typography Helpers */
+.type-display-hero {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+}
+
+.type-display-section {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.type-mono-telemetry {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem; /* 11px */
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+
+.type-body-editorial {
+  font-family: var(--font-sans);
+  line-height: 1.65;
+  color: var(--muted-foreground);
+}
+
+/* ==========================================================================
+   3D CANVAS ISOLATION SAFEGUARDS (FOR THEO & ELLA)
+   Prevents global CSS collisions with Three.js WebGL rendering & OrbitControls
+   ========================================================================== */
+canvas,
+[data-engine="three.js"],
+.canvas-3d-container {
+  touch-action: none;
+  pointer-events: auto;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
 }
