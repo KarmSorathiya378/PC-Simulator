@@ -122,9 +122,10 @@ const LightingRig: React.FC<{ preset: LightingPreset }> = ({ preset }) => {
     default:
       return (
         <>
-          <ambientLight intensity={0.45} color="#ffffff" />
-          <directionalLight position={[6, 8, 5]} intensity={1.2} color="#ffffff" />
-          <directionalLight position={[-6, 4, -5]} intensity={0.5} color="#94a3b8" />
+          <ambientLight intensity={0.65} color="#ffffff" />
+          <directionalLight position={[6, 8, 5]} intensity={1.0} color="#ffffff" />
+          <directionalLight position={[-6, 4, 4]} intensity={1.1} color="#f8fafc" />
+          <directionalLight position={[-4, 1, -2]} intensity={0.6} color="#94a3b8" />
           <directionalLight position={[0, -6, 2]} intensity={0.25} color="#64748b" />
         </>
       );
@@ -196,17 +197,16 @@ const ActiveSlotGhost: React.FC<{
       <Html
         position={[0, transform.placeholderSize[1] / 2 + 0.35, 0]}
         center
-        distanceFactor={18}
-        zIndexRange={[100, 0]}
+        zIndexRange={[0, 0]}
       >
         <div
           onClick={(e) => {
             e.stopPropagation();
             onClick?.();
           }}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-950/90 border border-sky-400 text-sky-200 text-xs font-semibold shadow-xl shadow-sky-500/30 backdrop-blur-md cursor-pointer select-none whitespace-nowrap hover:scale-105 transition-transform"
+          className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-950/85 border border-sky-400/70 text-sky-200 text-[10px] font-mono font-medium shadow-lg shadow-sky-500/20 backdrop-blur-sm cursor-pointer select-none whitespace-nowrap hover:scale-105 transition-transform"
         >
-          <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping inline-block" />
+          <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-ping inline-block" />
           <span>Active: {slot.label}</span>
         </div>
       </Html>
@@ -290,11 +290,10 @@ const SlotOutline: React.FC<{
         <Html
           position={[0, bounds[1] / 2 + 0.35, 0]}
           center
-          distanceFactor={18}
-          zIndexRange={[100, 0]}
+          zIndexRange={[0, 0]}
         >
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-950/90 border border-sky-400 text-sky-200 text-xs font-semibold shadow-xl shadow-sky-500/25 backdrop-blur-md select-none pointer-events-none whitespace-nowrap">
-            <span className="w-2 h-2 rounded-full bg-sky-400 inline-block" />
+          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-950/85 border border-sky-400/70 text-sky-200 text-[10px] font-mono font-medium shadow-lg shadow-sky-500/20 backdrop-blur-sm select-none pointer-events-none whitespace-nowrap">
+            <span className="w-1.5 h-1.5 rounded-full bg-sky-400 inline-block" />
             <span>Active: {label}</span>
           </div>
         </Html>
@@ -318,7 +317,7 @@ export const Assembly3DCanvas: React.FC<Assembly3DCanvasProps> = ({
   lightingPreset: lightingPresetProp = 'studio',
   showCase = true,
   showControlsOverlay = true,
-  cameraPosition = [-10.5, 3.8, 9.5],
+  cameraPosition = [-12.2, 4.2, 11.2],
   className = 'w-full h-full min-h-[500px]',
 }) => {
   const storeOccupiedSlots = useAssemblyStore((state) => state.occupiedSlots);
@@ -357,7 +356,10 @@ export const Assembly3DCanvas: React.FC<Assembly3DCanvasProps> = ({
         cameraPosition={cameraPosition}
         fov={38}
         showShadows={false}
-        className="w-full h-full min-h-[480px]"
+        autoCenter={false}
+        autoFit={true}
+        targetFill={0.88}
+        className="w-full h-full"
       >
         {/* Dynamic Lighting Rig */}
         <LightingRig preset={currentPreset} />

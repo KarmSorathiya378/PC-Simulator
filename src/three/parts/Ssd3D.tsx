@@ -10,7 +10,9 @@ export const Ssd3D: React.FC<Ssd3DProps> = ({ wireframe = false }) => {
 
   return (
     <group dispose={null}>
-      {/* 1. Slim M.2 2280 PCB Circuit Board (Matte Black Solder Mask) */}
+      {/* Centered at origin [0, 0, 0] across PCB substrate and top SMD chips */}
+      <group position={[0, 0, -0.055]}>
+        {/* 1. Slim M.2 2280 PCB Circuit Board (Matte Black Solder Mask) */}
       <mesh position={[0, 0, 0]} castShadow receiveShadow>
         <boxGeometry args={[5.6, 1.5, 0.08]} />
         <meshStandardMaterial
@@ -168,6 +170,7 @@ export const Ssd3D: React.FC<Ssd3DProps> = ({ wireframe = false }) => {
           wireframe={wireframe}
         />
       </mesh>
+      </group>
     </group>
   );
 };

@@ -40,7 +40,9 @@ export const Cable3D: React.FC<Cable3DProps> = ({ wireframe = false }) => {
 
   return (
     <group dispose={null}>
-      {/* 1. Molded 24-Pin ATX Connector Terminal Block (Upper Header) */}
+      {/* Centered at origin [0, 0, 0] */}
+      <group position={[0, 0.65, -0.1]}>
+        {/* 1. Molded 24-Pin ATX Connector Terminal Block (Upper Header) */}
       <group position={[0, 0, 2.3]}>
         <mesh castShadow>
           <boxGeometry args={[2.8, 0.65, 0.6]} />
@@ -91,6 +93,7 @@ export const Cable3D: React.FC<Cable3DProps> = ({ wireframe = false }) => {
           />
         </mesh>
       ))}
+      </group>
     </group>
   );
 };

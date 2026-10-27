@@ -26,7 +26,9 @@ export const Gpu3D: React.FC<Gpu3DProps> = ({
 
   return (
     <group dispose={null}>
-      {/* 1. Main Graphics Card PCB (Black matte composite board) */}
+      {/* Centered at origin [0, 0, 0] across PCIe bracket, PCIe fingers, and cooling fans */}
+      <group position={[0.045, -0.13, -0.425]}>
+        {/* 1. Main Graphics Card PCB (Black matte composite board) */}
       <mesh position={[0, 0, 0]} castShadow receiveShadow>
         <boxGeometry args={[7.2, 2.6, 0.08]} />
         <meshStandardMaterial
@@ -209,6 +211,7 @@ export const Gpu3D: React.FC<Gpu3DProps> = ({
           roughness={0.2}
         />
       </mesh>
+      </group>
     </group>
   );
 };

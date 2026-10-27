@@ -14,7 +14,9 @@ export const Ram3D: React.FC<Ram3DProps> = ({ wireframe = false }) => {
 
   return (
     <group dispose={null}>
-      {/* 1. Black PCB Substrate */}
+      {/* Centered at origin [0, 0, 0] across gold fingers and top RGB diffuser */}
+      <group position={[0, -0.08, 0]}>
+        {/* 1. Black PCB Substrate */}
       <mesh position={[0, 0, 0]} castShadow receiveShadow>
         <boxGeometry args={[5.2, 1.4, 0.08]} />
         <meshStandardMaterial
@@ -97,6 +99,7 @@ export const Ram3D: React.FC<Ram3DProps> = ({ wireframe = false }) => {
           <meshStandardMaterial color="#94A3B8" roughness={0.3} metalness={0.8} />
         </mesh>
       ))}
+      </group>
     </group>
   );
 };

@@ -21,6 +21,10 @@ export interface Part3DProps {
   onHover?: (hovered: boolean) => void;
   onClick?: () => void;
   className?: string;
+  /** When true, scales model to canonical viewport presentation bounds. Defaults to true if scale not specified */
+  fitContainer?: boolean;
+  /** Automatically centers internal geometry at [0, 0, 0]. Defaults to false inside slot groups */
+  autoCenter?: boolean;
 }
 
 export interface PartVisualMetadata {

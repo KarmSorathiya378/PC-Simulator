@@ -29,82 +29,82 @@ export interface Slot3DTransform {
  */
 export const SLOT_3D_TRANSFORMS: Record<string, Slot3DTransform> = {
   'slot-motherboard': {
-    position: [0.65, 0.95, -0.5],
+    position: [0.3, 0.95, -0.5],
     rotation: [Math.PI / 2, 0, Math.PI / 2],
     scale: 0.68,
-    placeholderSize: [0.22, 5.3, 5.3],
+    placeholderSize: [5.3, 0.93, 5.3],
     explodedOffset: [-1.2, 0, 0],
     partType: 'motherboard',
   },
   'slot-cpu': {
-    position: [0.51, 1.63, -1.04],
+    position: [0.54, 1.63, -1.04],
     rotation: [Math.PI / 2, 0, Math.PI / 2],
-    scale: 0.55,
-    placeholderSize: [0.18, 1.8, 1.8],
+    scale: 0.56,
+    placeholderSize: [1.8, 0.2, 1.8],
     explodedOffset: [-2.0, 0, 0],
     partType: 'cpu',
   },
   'slot-cooler': {
-    position: [0.1, 1.63, -1.04],
+    position: [0.21, 1.63, -1.04],
     rotation: [0, Math.PI / 2, 0],
     scale: 0.48,
-    placeholderSize: [1.3, 2.2, 2.2],
+    placeholderSize: [2.12, 2.12, 0.46],
     explodedOffset: [-3.2, 0, 0],
     partType: 'fan',
   },
   'slot-ram-1': {
-    position: [0.42, 1.56, 0.32],
+    position: [0.28, 1.56, 0.32],
     rotation: [0, 0, Math.PI / 2],
     scale: 0.45,
-    placeholderSize: [0.75, 2.35, 0.16],
+    placeholderSize: [2.38, 0.72, 0.16],
     explodedOffset: [-1.6, 0.8, 0],
     partType: 'ram',
   },
   'slot-ram-2': {
-    position: [0.42, 1.56, 0.59],
+    position: [0.28, 1.56, 0.59],
     rotation: [0, 0, Math.PI / 2],
     scale: 0.45,
-    placeholderSize: [0.75, 2.35, 0.16],
+    placeholderSize: [2.38, 0.72, 0.16],
     explodedOffset: [-1.6, 0.8, 0],
     partType: 'ram',
   },
   'slot-ram-3': {
-    position: [0.42, 1.56, 0.86],
+    position: [0.28, 1.56, 0.86],
     rotation: [0, 0, Math.PI / 2],
     scale: 0.45,
-    placeholderSize: [0.75, 2.35, 0.16],
+    placeholderSize: [2.38, 0.72, 0.16],
     explodedOffset: [-1.6, 0.8, 0],
     partType: 'ram',
   },
   'slot-ram-4': {
-    position: [0.42, 1.56, 1.13],
+    position: [0.28, 1.56, 1.13],
     rotation: [0, 0, Math.PI / 2],
     scale: 0.45,
-    placeholderSize: [0.75, 2.35, 0.16],
+    placeholderSize: [2.38, 0.72, 0.16],
     explodedOffset: [-1.6, 0.8, 0],
     partType: 'ram',
   },
   'slot-m2': {
-    position: [0.5, 0.68, -1.04],
+    position: [0.56, 0.68, -1.04],
     rotation: [Math.PI / 2, 0, Math.PI / 2],
     scale: 0.35,
-    placeholderSize: [0.18, 1.95, 0.6],
+    placeholderSize: [1.96, 0.53, 0.12],
     explodedOffset: [-1.4, -0.6, 0],
     partType: 'ssd',
   },
   'slot-pcie-x16': {
-    position: [-0.1, 0.27, -0.4],
+    position: [-0.49, 0.27, -2.43],
     rotation: [Math.PI / 2, 0, Math.PI / 2],
     scale: 0.65,
-    placeholderSize: [1.8, 1.7, 4.8],
+    placeholderSize: [4.75, 2.24, 0.72],
     explodedOffset: [-2.4, 0, 0],
     partType: 'gpu',
   },
   'slot-psu': {
-    position: [-0.2, -4.0, -1.8],
-    rotation: [0, 0, 0],
+    position: [0, -4.0, -3.08],
+    rotation: [0, Math.PI, 0],
     scale: 0.65,
-    placeholderSize: [3.2, 2.15, 3.4],
+    placeholderSize: [3.15, 2.1, 3.45],
     explodedOffset: [0, -1.8, 0],
     partType: 'psu',
   },
@@ -146,11 +146,20 @@ export function getSlot3DTransform(slotId: string, slot?: Slot): Slot3DTransform
   const partType: HardwarePartType =
     category === 'cooler' ? 'fan' : (category as HardwarePartType);
 
+  let placeholderSize: [number, number, number] = [1.5, 1.5, 1.5];
+  if (partType === 'motherboard') placeholderSize = [5.3, 0.93, 5.3];
+  else if (partType === 'cpu') placeholderSize = [1.8, 0.2, 1.8];
+  else if (partType === 'fan') placeholderSize = [2.12, 2.12, 0.46];
+  else if (partType === 'ram') placeholderSize = [2.38, 0.72, 0.16];
+  else if (partType === 'ssd') placeholderSize = [1.96, 0.53, 0.12];
+  else if (partType === 'gpu') placeholderSize = [4.75, 2.24, 0.72];
+  else if (partType === 'psu') placeholderSize = [3.15, 2.1, 3.45];
+
   return {
     position: fallbackPosition,
     rotation: [0, 0, 0],
     scale: 0.5,
-    placeholderSize: [1.2, 1.2, 1.2],
+    placeholderSize,
     explodedOffset: [-1.2, 0, 0],
     partType,
   };

@@ -8,7 +8,6 @@ import {
   Box,
   Layers,
   Sparkles,
-  Info,
   Maximize2,
   Cpu,
   Tv,
@@ -17,6 +16,8 @@ import {
   Fan,
   Cable as CableIcon,
   HardDrive,
+  CheckCircle2,
+  Sliders,
 } from 'lucide-react';
 
 const HARDWARE_CATALOG: PartVisualMetadata[] = [
@@ -160,6 +161,55 @@ const ICONS: Record<HardwarePartType, React.ElementType> = {
   ssd: HardDrive,
 };
 
+/**
+ * Presentation configuration for each hardware part.
+ * Sets optimal 3D perspective orientation so all physical details
+ * (IHS, contacts, ports, fan blades) face the camera attractively.
+ */
+interface PartPresentationConfig {
+  rotation: [number, number, number];
+  cameraPosition: [number, number, number];
+}
+
+const PART_PRESENTATION_CONFIG: Record<HardwarePartType, PartPresentationConfig> = {
+  cpu: {
+    rotation: [0.35, 0.4, 0],
+    cameraPosition: [4.5, 4.0, 5.5],
+  },
+  ram: {
+    rotation: [0.15, 0.55, 0],
+    cameraPosition: [5.0, 3.5, 6.0],
+  },
+  gpu: {
+    rotation: [0.15, -0.4, 0],
+    cameraPosition: [6.0, 4.0, 7.5],
+  },
+  motherboard: {
+    rotation: [0.45, 0.35, 0],
+    cameraPosition: [6.5, 6.0, 8.0],
+  },
+  psu: {
+    rotation: [0.25, 0.55, 0],
+    cameraPosition: [5.5, 4.0, 6.5],
+  },
+  fan: {
+    rotation: [0.15, 0.35, 0],
+    cameraPosition: [5.0, 4.0, 6.0],
+  },
+  cable: {
+    rotation: [0.15, 0.3, 0],
+    cameraPosition: [5.0, 4.0, 6.5],
+  },
+  case: {
+    rotation: [0.15, -0.6, 0],
+    cameraPosition: [7.5, 5.0, 9.5],
+  },
+  ssd: {
+    rotation: [0.25, 0.45, 0],
+    cameraPosition: [5.0, 3.5, 6.0],
+  },
+};
+
 export const Hardware3DPreview: React.FC = () => {
   const [selectedPart, setSelectedPart] = useState<HardwarePartType>('gpu');
   const [showExploded, setShowExploded] = useState(false);
@@ -170,63 +220,73 @@ export const Hardware3DPreview: React.FC = () => {
   const activeMeta =
     HARDWARE_CATALOG.find((p) => p.id === selectedPart) ?? HARDWARE_CATALOG[0];
 
+  const partConfig = PART_PRESENTATION_CONFIG[selectedPart] ?? {
+    rotation: [0, 0, 0],
+    cameraPosition: [6, 4, 8],
+  };
+
   return (
-    <div className="w-full min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+    <div className="w-full min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors">
       {/* Top Header */}
-      <header className="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+      <header className="border-b border-border bg-card/80 glass-surface px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-20">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
-            <Box className="w-6 h-6" />
+          <div className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-xs shadow-primary/25">
+            <Box className="size-5" />
           </div>
           <div>
-            <h1 className="text-lg font-bold tracking-tight text-white flex items-center gap-2">
-              PC Hardware 3D Lab
-              <span className="text-xs px-2 py-0.5 rounded-full bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 font-medium">
-                WebGL 2.0 • Three.js
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-extrabold tracking-tight font-display text-foreground">
+                Hardware 3D Studio
+              </h1>
+              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-primary-light border border-primary-border text-primary font-mono font-medium">
+                Auto-Framed PBR
               </span>
-            </h1>
-            <p className="text-xs text-slate-400">
-              Interactive stylized-realistic 3D hardware models with procedural PBR materials
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Responsive WebGL viewport auto-scaled to 85% container fill with dynamic studio lighting
             </p>
           </div>
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
+            type="button"
             onClick={() => setShowExploded(!showExploded)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold border transition-all flex items-center gap-2 cursor-pointer pressable-element ${
               showExploded
-                ? 'bg-cyan-500 text-slate-950 border-cyan-400 shadow-sm shadow-cyan-500/30'
-                : 'bg-slate-800/80 hover:bg-slate-800 text-slate-200 border-slate-700'
+                ? 'bg-primary text-primary-foreground border-primary shadow-xs shadow-primary/25 font-bold'
+                : 'bg-secondary text-secondary-foreground hover:bg-muted border-border'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5" />
-            {showExploded ? 'Single Part Mode' : 'Exploded PC Rig'}
+            <Sparkles className="size-3.5" />
+            <span>{showExploded ? 'Single Part Focus' : 'Exploded Hardware Rig'}</span>
           </button>
 
           <button
+            type="button"
             onClick={() => setAutoRotate(!autoRotate)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all flex items-center gap-1.5 cursor-pointer pressable-element ${
               autoRotate
-                ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30'
-                : 'bg-slate-800/80 hover:bg-slate-800 text-slate-400 border-slate-700'
+                ? 'bg-primary-light text-primary border-primary-border font-semibold'
+                : 'bg-secondary text-muted-foreground hover:text-foreground border-border'
             }`}
           >
-            <RotateCcw className="w-3.5 h-3.5" />
-            Auto-Rotate
+            <RotateCcw className="size-3.5" />
+            <span>Auto-Rotate</span>
           </button>
 
           <button
+            type="button"
             onClick={() => setWireframe(!wireframe)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all flex items-center gap-1.5 cursor-pointer pressable-element ${
               wireframe
-                ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
-                : 'bg-slate-800/80 hover:bg-slate-800 text-slate-400 border-slate-700'
+                ? 'bg-accent-warm-light text-accent-warm-foreground border-accent-warm-border font-semibold'
+                : 'bg-secondary text-muted-foreground hover:text-foreground border-border'
             }`}
           >
-            <Eye className="w-3.5 h-3.5" />
-            Wireframe
+            <Eye className="size-3.5" />
+            <span>Wireframe</span>
           </button>
         </div>
       </header>
@@ -234,99 +294,132 @@ export const Hardware3DPreview: React.FC = () => {
       {/* Main Workspace Layout */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0 relative">
         {/* Left Sidebar: Part Navigation List */}
-        <aside className="lg:col-span-3 border-r border-slate-800/80 bg-slate-900/40 p-4 space-y-4 flex flex-col justify-between">
-          <div className="space-y-1">
-            <div className="text-xs uppercase tracking-wider text-slate-400 font-semibold px-2 mb-2 flex items-center justify-between">
-              <span>Hardware Parts</span>
-              <span className="text-[10px] text-cyan-400 bg-cyan-950/60 px-1.5 py-0.5 rounded border border-cyan-800/50">
+        <aside className="lg:col-span-3 border-r border-border bg-background-subtle/40 p-4 space-y-4 flex flex-col justify-between">
+          <div className="space-y-1.5">
+            <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold px-2 mb-2 flex items-center justify-between">
+              <span>Hardware Catalog</span>
+              <span className="text-[10px] text-primary bg-primary-light px-2 py-0.5 rounded-full border border-primary-border font-mono font-medium">
                 {HARDWARE_CATALOG.length} models
               </span>
             </div>
 
-            {HARDWARE_CATALOG.map((part) => {
-              const Icon = ICONS[part.id];
-              const isSelected = selectedPart === part.id && !showExploded;
-              return (
-                <button
-                  key={part.id}
-                  onClick={() => {
-                    setSelectedPart(part.id);
-                    setShowExploded(false);
-                  }}
-                  className={`w-full text-left p-2.5 rounded-xl transition-all border flex items-center gap-3 ${
-                    isSelected
-                      ? 'bg-cyan-500/10 border-cyan-500/40 text-cyan-200 shadow-sm shadow-cyan-500/10'
-                      : 'border-transparent hover:bg-slate-800/50 text-slate-300 hover:text-white'
-                  }`}
-                >
-                  <div
-                    className={`p-2 rounded-lg ${
+            <div className="space-y-1.5 max-h-[calc(100vh-280px)] overflow-y-auto pr-1">
+              {HARDWARE_CATALOG.map((part) => {
+                const Icon = ICONS[part.id];
+                const isSelected = selectedPart === part.id && !showExploded;
+                return (
+                  <button
+                    key={part.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedPart(part.id);
+                      setShowExploded(false);
+                    }}
+                    className={`w-full text-left p-2.5 rounded-xl transition-all border flex items-center gap-3 cursor-pointer pressable-element ${
                       isSelected
-                        ? 'bg-cyan-500 text-slate-950 font-bold'
-                        : 'bg-slate-800 text-slate-400'
+                        ? 'bg-primary-light border-primary-border text-primary shadow-xs ring-1 ring-primary/20 font-medium'
+                        : 'border-transparent hover:bg-card text-muted-foreground hover:text-foreground'
                     }`}
                   >
-                    <Icon className="w-4 h-4" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs font-semibold truncate">{part.name}</div>
-                    <div className="text-[10px] text-slate-400 truncate">
-                      {part.category}
+                    <div
+                      className={`p-2 rounded-lg shrink-0 transition-colors ${
+                        isSelected
+                          ? 'bg-primary text-primary-foreground font-bold shadow-2xs'
+                          : 'bg-secondary text-muted-foreground'
+                      }`}
+                    >
+                      <Icon className="size-4" />
                     </div>
-                  </div>
-                </button>
-              );
-            })}
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-semibold truncate text-foreground">
+                        {part.name}
+                      </div>
+                      <div className="text-[10px] text-muted-foreground truncate">
+                        {part.category}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Quick Technical Summary Card */}
-          <div className="p-3.5 rounded-xl bg-slate-800/40 border border-slate-700/50 text-xs space-y-2">
-            <div className="flex items-center gap-1.5 text-cyan-400 font-semibold">
-              <Info className="w-4 h-4" />
-              <span>3D Model Specs</span>
+          <div className="p-3.5 rounded-xl card-elevated border border-border text-xs space-y-2.5">
+            <div className="flex items-center gap-1.5 text-primary font-semibold">
+              <Sliders className="size-3.5" />
+              <span>Viewport Auto-Framing</span>
             </div>
-            <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300">
-              <div>
-                <span className="text-slate-400 block text-[10px]">Renderer</span>
-                Three.js PBR
+            <div className="grid grid-cols-2 gap-2 text-[11px]">
+              <div className="p-1.5 rounded-lg bg-background-subtle/80 border border-border-subtle">
+                <span className="text-muted-foreground block text-[9px] uppercase font-mono">Fill Target</span>
+                <span className="font-semibold text-foreground">85% Viewport</span>
               </div>
-              <div>
-                <span className="text-slate-400 block text-[10px]">Shadows</span>
-                Contact & Soft
+              <div className="p-1.5 rounded-lg bg-background-subtle/80 border border-border-subtle">
+                <span className="text-muted-foreground block text-[9px] uppercase font-mono">Centering</span>
+                <span className="font-semibold text-foreground">Bounding Center</span>
               </div>
-              <div>
-                <span className="text-slate-400 block text-[10px]">Shading</span>
-                ACESFilmic
+              <div className="p-1.5 rounded-lg bg-background-subtle/80 border border-border-subtle">
+                <span className="text-muted-foreground block text-[9px] uppercase font-mono">Responsive</span>
+                <span className="font-semibold text-foreground">Mobile &amp; Desktop</span>
               </div>
-              <div>
-                <span className="text-slate-400 block text-[10px]">Textures</span>
-                Procedural Canvas
+              <div className="p-1.5 rounded-lg bg-background-subtle/80 border border-border-subtle">
+                <span className="text-muted-foreground block text-[9px] uppercase font-mono">Shadows</span>
+                <span className="font-semibold text-foreground">Ground Dynamic</span>
               </div>
             </div>
           </div>
         </aside>
 
         {/* Center: 3D Canvas Viewport */}
-        <main className="lg:col-span-6 relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col min-h-[480px]">
-          {/* Canvas Navigation Hint */}
-          <div className="absolute top-4 left-4 z-10 pointer-events-none bg-slate-900/80 backdrop-blur px-3 py-1.5 rounded-lg border border-slate-800 text-[11px] text-slate-400 flex items-center gap-2">
-            <Maximize2 className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Click & Drag to Orbit • Scroll to Zoom</span>
+        <main className="lg:col-span-6 relative bg-blueprint-dots border-r border-border flex flex-col min-h-[480px] h-[55vh] lg:h-auto overflow-hidden">
+          {/* Subtle Radial Pedestal Highlight */}
+          <div
+            className="absolute inset-0 pointer-events-none opacity-50 dark:opacity-30"
+            style={{
+              background:
+                'radial-gradient(ellipse at 50% 55%, var(--card) 0%, transparent 72%)',
+            }}
+          />
+
+          {/* Studio Tech Reticle Rings on Floor */}
+          <div
+            className="absolute inset-0 pointer-events-none opacity-15"
+            style={{
+              backgroundImage:
+                'radial-gradient(circle at 50% 55%, transparent 220px, var(--border-strong) 221px, transparent 222px, transparent 320px, var(--border-strong) 321px, transparent 322px)',
+            }}
+          />
+
+          {/* Architectural Viewport Frame Crosshairs */}
+          <div className="absolute top-3 left-3 size-4 border-t-2 border-l-2 border-border-strong pointer-events-none z-10 opacity-70" />
+          <div className="absolute top-3 right-3 size-4 border-t-2 border-r-2 border-border-strong pointer-events-none z-10 opacity-70" />
+          <div className="absolute bottom-3 left-3 size-4 border-b-2 border-l-2 border-border-strong pointer-events-none z-10 opacity-70" />
+          <div className="absolute bottom-3 right-3 size-4 border-b-2 border-r-2 border-border-strong pointer-events-none z-10 opacity-70" />
+
+          {/* Canvas Navigation Hint HUD */}
+          <div className="absolute top-4 left-4 z-10 pointer-events-none glass-surface px-3 py-1.5 rounded-lg border border-border text-[11px] text-muted-foreground flex items-center gap-2 shadow-xs">
+            <Maximize2 className="size-3.5 text-primary" />
+            <span>Drag to Orbit • Scroll to Zoom</span>
           </div>
 
           {hoveredInfo && (
-            <div className="absolute top-4 right-4 z-10 bg-cyan-950/80 backdrop-blur border border-cyan-500/40 text-cyan-200 text-xs px-3 py-1.5 rounded-lg shadow-lg">
+            <div className="absolute top-4 right-4 z-10 glass-surface border border-primary-border bg-primary-light text-primary text-xs font-mono font-medium px-3 py-1.5 rounded-lg shadow-sm animate-in fade-in duration-150">
               {hoveredInfo}
             </div>
           )}
 
-          {/* The R3F Scene */}
-          <div className="flex-1 w-full h-full">
+          {/* The R3F Scene Viewport with 88% Auto-Fit Framing */}
+          <div className="flex-1 w-full h-full min-h-[460px]">
             <Scene3D
+              autoFit={true}
+              targetFill={0.88}
+              autoCenter={true}
               autoRotate={autoRotate}
               autoRotateSpeed={0.8}
-              cameraPosition={showExploded ? [14, 10, 16] : [6, 4, 8]}
+              cameraPosition={showExploded ? [14, 10, 16] : partConfig.cameraPosition}
               fov={38}
+              key={selectedPart + (showExploded ? '-exploded' : '-single')}
             >
               {showExploded ? (
                 /* Exploded Assembly Rig showcasing all 7 parts spatially separated */
@@ -389,11 +482,12 @@ export const Hardware3DPreview: React.FC = () => {
                   />
                 </group>
               ) : (
-                /* Single Part Focus View */
+                /* Single Part Focus View: auto-scaled and auto-framed to 85% fill */
                 <Part3D
                   type={selectedPart}
-                  scale={selectedPart === 'cpu' ? 1.4 : selectedPart === 'ram' ? 1.3 : 1.0}
+                  rotation={partConfig.rotation}
                   wireframe={wireframe}
+                  fitContainer={true}
                   onHover={(h) => setHoveredInfo(h ? activeMeta.name : null)}
                 />
               )}
@@ -402,41 +496,42 @@ export const Hardware3DPreview: React.FC = () => {
         </main>
 
         {/* Right Sidebar: Active Component Specification Inspector */}
-        <aside className="lg:col-span-3 border-l border-slate-800/80 bg-slate-900/40 p-5 flex flex-col justify-between space-y-4">
+        <aside className="lg:col-span-3 bg-card/60 p-5 flex flex-col justify-between space-y-4">
           <div className="space-y-4">
             <div>
-              <div className="text-[11px] font-bold text-cyan-400 uppercase tracking-wider mb-1">
+              <div className="text-[11px] font-bold text-accent-warm uppercase tracking-wider font-mono mb-1">
                 {activeMeta.category}
               </div>
-              <h2 className="text-base font-bold text-white leading-snug">
+              <h2 className="text-base font-extrabold text-foreground font-display leading-snug">
                 {activeMeta.name}
               </h2>
-              <p className="text-xs text-slate-300 mt-2 leading-relaxed">
+              <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
                 {activeMeta.description}
               </p>
             </div>
 
             {/* Scale Dimensions */}
-            <div className="p-3 rounded-xl bg-slate-800/50 border border-slate-700/60">
-              <div className="text-[11px] font-semibold text-slate-400 mb-2">
-                Physical Form Factor Dimensions
+            <div className="p-3.5 rounded-xl card-elevated border border-border">
+              <div className="text-[11px] font-semibold text-muted-foreground mb-2 flex items-center justify-between">
+                <span>Form Factor Dimensions</span>
+                <span className="text-[9px] font-mono text-primary font-bold">1:1 Metric Scale</span>
               </div>
               <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                <div className="bg-slate-900/60 p-1.5 rounded-lg border border-slate-800">
-                  <span className="block text-[10px] text-slate-400">Width</span>
-                  <span className="font-semibold text-white">
+                <div className="bg-background-subtle/80 p-2 rounded-lg border border-border-subtle">
+                  <span className="block text-[10px] text-muted-foreground font-mono uppercase">Width</span>
+                  <span className="font-bold text-foreground font-mono">
                     {activeMeta.dimensionsMm.width} mm
                   </span>
                 </div>
-                <div className="bg-slate-900/60 p-1.5 rounded-lg border border-slate-800">
-                  <span className="block text-[10px] text-slate-400">Height</span>
-                  <span className="font-semibold text-white">
+                <div className="bg-background-subtle/80 p-2 rounded-lg border border-border-subtle">
+                  <span className="block text-[10px] text-muted-foreground font-mono uppercase">Height</span>
+                  <span className="font-bold text-foreground font-mono">
                     {activeMeta.dimensionsMm.height} mm
                   </span>
                 </div>
-                <div className="bg-slate-900/60 p-1.5 rounded-lg border border-slate-800">
-                  <span className="block text-[10px] text-slate-400">Depth</span>
-                  <span className="font-semibold text-white">
+                <div className="bg-background-subtle/80 p-2 rounded-lg border border-border-subtle">
+                  <span className="block text-[10px] text-muted-foreground font-mono uppercase">Depth</span>
+                  <span className="font-bold text-foreground font-mono">
                     {activeMeta.dimensionsMm.depth} mm
                   </span>
                 </div>
@@ -445,17 +540,18 @@ export const Hardware3DPreview: React.FC = () => {
 
             {/* Key Hardware Features */}
             <div>
-              <div className="text-xs font-semibold text-slate-300 mb-2">
-                Key Hardware Features
+              <div className="text-xs font-semibold text-foreground mb-2 flex items-center gap-1.5">
+                <CheckCircle2 className="size-3.5 text-success" />
+                <span>Hardware Specifications</span>
               </div>
               <ul className="space-y-2">
                 {activeMeta.keySpecs.map((spec, i) => (
                   <li
                     key={i}
-                    className="text-xs text-slate-300 flex items-start gap-2 bg-slate-800/30 p-2 rounded-lg border border-slate-800"
+                    className="text-xs text-muted-foreground flex items-start gap-2 bg-background-subtle/60 p-2.5 rounded-lg border border-border-subtle"
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-1.5 shrink-0" />
-                    <span>{spec}</span>
+                    <span className="size-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+                    <span className="text-foreground">{spec}</span>
                   </li>
                 ))}
               </ul>
@@ -463,15 +559,19 @@ export const Hardware3DPreview: React.FC = () => {
           </div>
 
           {/* Educational Note */}
-          <div className="p-3 rounded-xl bg-indigo-950/30 border border-indigo-500/20 text-indigo-200 text-xs">
-            <span className="font-semibold block mb-1 text-indigo-300">
-              Interactive 3D Guidance
+          <div className="p-3.5 rounded-xl bg-primary-light border border-primary-border text-xs text-foreground space-y-1">
+            <span className="font-bold block text-primary text-[11px] uppercase tracking-wider font-mono">
+              Hardware Technician Tip
             </span>
-            Rotate with the mouse to inspect socket pins, connector notches, and heatsink
-            fins before placing components into the virtual case!
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Rotate with the mouse to inspect socket pins, connector notches, and heatsink
+              fins before placing components into the virtual chassis!
+            </p>
           </div>
         </aside>
       </div>
     </div>
   );
 };
+
+export default Hardware3DPreview;

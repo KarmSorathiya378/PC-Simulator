@@ -10,7 +10,9 @@ export const Cpu3D: React.FC<Cpu3DProps> = ({ wireframe = false }) => {
 
   return (
     <group dispose={null}>
-      {/* 1. Green Substrate PCB (LGA Package Base) */}
+      {/* Centered at origin [0, 0, 0] across LGA pins and IHS cap */}
+      <group position={[0, -0.09, 0]}>
+        {/* 1. Green Substrate PCB (LGA Package Base) */}
       <mesh position={[0, 0, 0]} castShadow receiveShadow>
         <boxGeometry args={[3.2, 0.12, 3.2]} />
         <meshStandardMaterial
@@ -80,6 +82,7 @@ export const Cpu3D: React.FC<Cpu3DProps> = ({ wireframe = false }) => {
           </mesh>
         ))
       )}
+      </group>
     </group>
   );
 };

@@ -1,145 +1,247 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   BookOpen,
-  Cpu,
-  HardDrive,
-  Layers,
   Wrench,
-  Zap,
   Info,
   CheckCircle2,
   AlertTriangle,
   ArrowRight,
-  ShieldAlert,
+  ShieldCheck,
   Search,
+  Box,
+  SlidersHorizontal,
+  Sparkles,
 } from 'lucide-react';
 import { components } from '../../data/components';
 import type { ComponentDefinition, Category } from '../../types';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../../components/ui/card';
-import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
+import {
+  BrandBadge,
+  GlowCard,
+  GradientText,
+  GlassPanel,
+  Chip,
+  SectionHeading,
+} from '../../components/ui';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '../../components/ui/dialog';
+import { Scene3D, Part3D } from '../../three';
+import type { HardwarePartType } from '../../three/types';
+import { cn } from '@/lib/utils';
 
-const categoryLabels: Record<Category | 'all', string> = {
-  all: 'All Hardware',
-  case: 'Case & Chassis',
-  motherboard: 'Motherboard',
-  cpu: 'Processors (CPU)',
-  cooler: 'Cooling',
-  ram: 'Memory (RAM)',
-  ssd: 'Storage (M.2 NVMe)',
-  gpu: 'Graphics (GPU)',
-  psu: 'Power Supply (PSU)',
+const CATEGORY_TO_3D: Record<string, HardwarePartType | undefined> = {
+  cpu: 'cpu',
+  gpu: 'gpu',
+  ram: 'ram',
+  motherboard: 'motherboard',
+  psu: 'psu',
+  cooler: 'fan',
+  case: 'case',
+  ssd: 'ssd',
+};
+
+const categoryLabels: Record<Category | 'all', { label: string; icon: string }> = {
+  all: { label: 'All Hardware', icon: 'ALL' },
+  motherboard: { label: 'Motherboard', icon: 'MBD' },
+  cpu: { label: 'Processors', icon: 'CPU' },
+  cooler: { label: 'Cooling', icon: 'FAN' },
+  ram: { label: 'Memory', icon: 'RAM' },
+  ssd: { label: 'M.2 NVMe', icon: 'SSD' },
+  gpu: { label: 'Graphics', icon: 'GPU' },
+  psu: { label: 'Power Supply', icon: 'PSU' },
+  case: { label: 'Chassis', icon: 'CHAS' },
 };
 
 export const LearnScreen: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<Category | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCompId, setSelectedCompId] = useState<string>('motherboard-b650-01');
+  const [inspect3DCompId, setInspect3DCompId] = useState<string | null>(null);
 
-  const filteredComponents = components.filter((comp) => {
-    const matchesCategory = selectedCategory === 'all' || comp.category === selectedCategory;
-    const matchesSearch =
-      comp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      comp.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      comp.category.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  const filteredComponents = useMemo(() => {
+    return components.filter((comp) => {
+      const matchesCategory = selectedCategory === 'all' || comp.category === selectedCategory;
+      const q = searchQuery.toLowerCase().trim();
+      const matchesSearch =
+        !q ||
+        comp.name.toLowerCase().includes(q) ||
+        comp.description.toLowerCase().includes(q) ||
+        comp.category.toLowerCase().includes(q) ||
+        (comp.socket && comp.socket.toLowerCase().includes(q)) ||
+        (comp.formFactor && comp.formFactor.toLowerCase().includes(q));
+      return matchesCategory && matchesSearch;
+    });
+  }, [selectedCategory, searchQuery]);
 
-  const selectedComponent: ComponentDefinition =
-    components.find((c) => c.id === selectedCompId) || components[0];
+  const selectedComponent: ComponentDefinition = useMemo(() => {
+    return (
+      components.find((c) => c.id === selectedCompId) ||
+      filteredComponents[0] ||
+      components[0]
+    );
+  }, [selectedCompId, filteredComponents]);
+
+  const active3DPartType = inspect3DCompId
+    ? CATEGORY_TO_3D[components.find((c) => c.id === inspect3DCompId)?.category || '']
+    : undefined;
 
   return (
-    <div className="space-y-6 py-4">
-      {/* Breadcrumb Navigation */}
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Link to="/" className="hover:text-foreground transition-colors">
-          Home
-        </Link>
-        <span>/</span>
-        <span className="font-medium text-foreground">Learn Mode</span>
+    <div className="space-y-8 py-2 w-full max-w-full overflow-hidden">
+      {/* Top Breadcrumb & Status */}
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground border-b border-border/60 pb-3">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2">
+          <Link to="/" className="hover:text-foreground transition-colors font-medium">
+            Platform
+          </Link>
+          <span className="text-muted-foreground/60">/</span>
+          <span className="font-semibold text-foreground">Hardware Atlas &amp; Anatomy</span>
+        </nav>
+        <div className="flex items-center gap-2.5 font-mono text-[11px]">
+          <BrandBadge variant="emerald" pulse>Spec Sheet Verified</BrandBadge>
+          <span className="text-muted-foreground/40">•</span>
+          <span className="text-primary font-bold">AMD AM5 / PCIe Gen 5 Standard</span>
+        </div>
       </div>
 
-      {/* Screen Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/60 pb-5">
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <BookOpen className="size-4" />
+      {/* Screen Hero Header */}
+      <GlowCard glowColor="cyan" className="p-6 sm:p-8 card-elevated">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="space-y-3 max-w-2xl">
+            <div className="inline-flex items-center gap-2">
+              <BrandBadge variant="cyan">
+                <BookOpen className="size-3 mr-1 inline" />
+                HARDWARE ATLAS // SPECIFICATION LEDGER
+              </BrandBadge>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
-              Hardware Catalog &amp; Anatomy
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground font-display">
+              Hardware Anatomy &amp; <GradientText variant="cyan-violet">Component Science</GradientText>
             </h1>
+            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+              Analyze physical silicon layouts, socket interconnect pinouts, thermal clearances, and
+              motherboard architecture prior to desktop assembly.
+            </p>
           </div>
-          <p className="mt-1.5 text-sm text-muted-foreground">
-            Explore PC components, socket standards, installation locations, and compatibility dependencies before assembling.
-          </p>
+
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            {CATEGORY_TO_3D[selectedComponent.category] && (
+              <Button
+                variant="outline"
+                onClick={() => setInspect3DCompId(selectedComponent.id)}
+                className="gap-2 text-xs font-medium pressable-element shadow-2xs"
+              >
+                <Box className="size-3.5 text-primary" />
+                <span>3D Specimen View</span>
+              </Button>
+            )}
+            <Link to="/guided">
+              <Button className="gap-2 font-semibold shadow-xs pressable-element">
+                <Wrench className="size-3.5" />
+                <span>Enter Guided Assembly</span>
+                <ArrowRight className="size-3.5" />
+              </Button>
+            </Link>
+          </div>
         </div>
+      </GlowCard>
 
-        <Link to="/guided">
-          <Button className="gap-2 shrink-0 font-medium active:scale-95 transition-transform shadow-xs">
-            <Wrench className="size-4" />
-            <span>Open Guided Assembly</span>
-          </Button>
-        </Link>
-      </div>
+      {/* Filter Dock: Category Selector & Search */}
+      <GlassPanel
+        variant="dock"
+        rounded="xl"
+        className="p-3 sm:p-4 border border-border/80 shadow-xs space-y-3"
+      >
+        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+          {/* Category Chips */}
+          <div className="flex flex-wrap items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
+            {(Object.keys(categoryLabels) as (Category | 'all')[]).map((cat) => {
+              const isSelected = selectedCategory === cat;
+              const count =
+                cat === 'all'
+                  ? components.length
+                  : components.filter((c) => c.category === cat).length;
 
-      {/* Category Filter Pills & Search */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        {/* Category Pills */}
-        <div className="flex flex-wrap items-center gap-1.5">
-          {(Object.keys(categoryLabels) as (Category | 'all')[]).map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-95 ${
-                selectedCategory === cat
-                  ? 'bg-primary text-primary-foreground shadow-xs font-semibold'
-                  : 'bg-secondary/70 text-secondary-foreground hover:bg-secondary'
-              }`}
-            >
-              {categoryLabels[cat]}
-            </button>
-          ))}
+              return (
+                <Chip
+                  key={cat}
+                  variant={isSelected ? "primary" : "interactive"}
+                  active={isSelected}
+                  onClick={() => setSelectedCategory(cat)}
+                  className="cursor-pointer"
+                >
+                  <span>{categoryLabels[cat].label}</span>
+                  <span
+                    className={cn(
+                      "text-[10px] font-mono px-1 rounded-sm",
+                      isSelected
+                        ? "bg-primary-foreground/20 text-primary-foreground font-bold"
+                        : "bg-muted text-muted-foreground"
+                    )}
+                  >
+                    {count}
+                  </span>
+                </Chip>
+              );
+            })}
+          </div>
+
+          {/* Search Input Field */}
+          <div className="relative w-full md:w-72 shrink-0">
+            <Search className="absolute left-3 top-2.5 size-3.5 text-muted-foreground pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Search specs, chipset, sockets..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full rounded-lg border border-border/80 bg-background/80 backdrop-blur-xs pl-8 pr-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all font-sans"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-2 text-[11px] text-muted-foreground hover:text-foreground cursor-pointer"
+              >
+                Clear
+              </button>
+            )}
+          </div>
         </div>
+      </GlassPanel>
 
-        {/* Search Input */}
-        <div className="relative w-full md:w-64">
-          <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Search specs or parts..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-border/80 bg-background pl-8 pr-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:ring-1 focus:ring-primary transition-all"
-          />
-        </div>
-      </div>
-
-      {/* Main Two-Column Layout */}
+      {/* Main Two-Column Architectural Workspace */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column: Component List Cards */}
+        {/* Left Column: Component Specimen Roster */}
         <div className="lg:col-span-5 space-y-3">
-          <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground px-1">
-            Component Roster ({filteredComponents.length})
+          <div className="flex items-center justify-between px-1">
+            <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground font-mono">
+              Hardware Roster ({filteredComponents.length})
+            </span>
+            <span className="text-[11px] text-muted-foreground font-mono">Select to inspect specs</span>
           </div>
 
-          <div className="space-y-2.5">
+          <div className="space-y-2.5 max-h-[720px] overflow-y-auto pr-1">
             {filteredComponents.map((comp) => {
               const isSelected = comp.id === selectedComponent.id;
               return (
                 <div
                   key={comp.id}
                   onClick={() => setSelectedCompId(comp.id)}
-                  className={`group relative flex items-start gap-3.5 p-3.5 rounded-xl border cursor-pointer transition-all active:scale-[0.99] ${
+                  className={cn(
+                    "group relative flex items-start gap-3.5 p-3.5 rounded-xl border cursor-pointer transition-all duration-200 pressable-element",
                     isSelected
-                      ? 'border-primary bg-primary/5 shadow-xs ring-1 ring-primary/20'
-                      : 'border-border/80 bg-card hover:border-border hover:shadow-xs'
-                  }`}
+                      ? "border-primary bg-primary/10 shadow-sm ring-1 ring-primary/30"
+                      : "border-border/80 bg-card/90 hover:border-border-strong hover:bg-card hover:-translate-y-0.5 shadow-2xs"
+                  )}
                 >
-                  {/* Color Thumbnail Indicator */}
+                  {/* Distinctive Hardware Chip Badge */}
                   <div
-                    className="flex size-11 shrink-0 items-center justify-center rounded-lg border border-border/60 shadow-inner font-mono text-xs font-bold text-white uppercase"
+                    className="flex size-11 shrink-0 items-center justify-center rounded-lg border border-border/60 shadow-inner font-mono text-[11px] font-bold text-white uppercase tracking-wider transition-transform group-hover:scale-105"
                     style={{ backgroundColor: comp.visual.color }}
                   >
                     {comp.category.substring(0, 3)}
@@ -148,40 +250,44 @@ export const LearnScreen: React.FC = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
                       <h3
-                        className={`text-sm font-semibold truncate transition-colors ${
-                          isSelected ? 'text-primary' : 'text-foreground group-hover:text-primary'
-                        }`}
+                        className={cn(
+                          "text-sm font-bold truncate font-display transition-colors",
+                          isSelected ? "text-primary" : "text-foreground group-hover:text-primary"
+                        )}
                       >
                         {comp.name}
                       </h3>
-                      <Badge variant={isSelected ? 'default' : 'secondary'} className="text-[10px] shrink-0 uppercase tracking-wider">
+                      <BrandBadge
+                        variant={isSelected ? 'cyan' : 'slate'}
+                        className="text-[10px] shrink-0 font-mono uppercase"
+                      >
                         {comp.category}
-                      </Badge>
+                      </BrandBadge>
                     </div>
 
                     <p className="mt-1 text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                       {comp.description}
                     </p>
 
-                    {/* Hardware Spec Badges */}
-                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                    {/* Architectural Spec Badges */}
+                    <div className="mt-2.5 flex flex-wrap items-center gap-1.5 font-mono text-[10px]">
                       {comp.socket && (
-                        <span className="inline-flex items-center rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
+                        <span className="inline-flex items-center rounded-md border border-border/60 bg-muted/50 px-2 py-0.5 text-foreground/80">
                           Socket: {comp.socket}
                         </span>
                       )}
                       {comp.ddr && (
-                        <span className="inline-flex items-center rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
+                        <span className="inline-flex items-center rounded-md border border-border/60 bg-muted/50 px-2 py-0.5 text-foreground/80">
                           {comp.ddr}
                         </span>
                       )}
                       {comp.formFactor && (
-                        <span className="inline-flex items-center rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
+                        <span className="inline-flex items-center rounded-md border border-border/60 bg-muted/50 px-2 py-0.5 text-foreground/80">
                           {comp.formFactor}
                         </span>
                       )}
                       {comp.wattage && (
-                        <span className="inline-flex items-center rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
+                        <span className="inline-flex items-center rounded-md border border-border/60 bg-muted/50 px-2 py-0.5 text-foreground/80">
                           {comp.wattage}W
                         </span>
                       )}
@@ -192,174 +298,229 @@ export const LearnScreen: React.FC = () => {
             })}
 
             {filteredComponents.length === 0 && (
-              <div className="p-8 text-center rounded-xl border border-dashed border-border bg-muted/20 text-muted-foreground text-sm">
-                No components match your search filter.
+              <div className="p-10 text-center rounded-xl border border-dashed border-border-strong bg-muted/20 text-muted-foreground text-xs space-y-2">
+                <SlidersHorizontal className="size-6 mx-auto opacity-50" />
+                <p className="font-semibold">No hardware components match "{searchQuery}"</p>
+                <p className="text-[11px] opacity-80">Reset filters or refine your search keywords.</p>
               </div>
             )}
           </div>
         </div>
 
-        {/* Right Column: Detailed Component Anatomy & Inspection View */}
+        {/* Right Column: Deep Architectural Spec Sheet */}
         <div className="lg:col-span-7 space-y-4">
-          <Card className="border-border/80 bg-card shadow-xs">
-            <CardHeader className="space-y-3 pb-4">
+          <Card className="border-border/80 bg-card shadow-xs card-elevated overflow-hidden">
+            <CardHeader className="space-y-3 pb-4 border-b border-border/60">
               <div className="flex items-center justify-between">
-                <Badge variant="outline" className="font-mono text-xs uppercase tracking-wider">
-                  Hardware Anatomy // {selectedComponent.category}
-                </Badge>
+                <BrandBadge variant="cyan">
+                  SPEC SHEET // {selectedComponent.category.toUpperCase()}
+                </BrandBadge>
                 <div className="flex items-center gap-2">
-                  <span className="inline-block size-2.5 rounded-full bg-emerald-500" />
-                  <span className="text-xs text-muted-foreground font-medium">Spec Sheet Verified</span>
+                  <span className="inline-block size-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-xs text-muted-foreground font-mono">Precision Verified</span>
                 </div>
               </div>
 
               <div>
-                <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
+                <CardTitle className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-display">
                   {selectedComponent.name}
                 </CardTitle>
-                <CardDescription className="mt-1 text-sm text-muted-foreground leading-relaxed">
+                <CardDescription className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
                   {selectedComponent.description}
                 </CardDescription>
               </div>
             </CardHeader>
 
-            {/* Visual Hardware Preview Graphic */}
-            <div className="px-6 py-4 bg-muted/30 border-y border-border/60">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl bg-card border border-border/80 shadow-xs">
+            {/* Visual Hardware Specimen Stage */}
+            <div className="px-6 py-5 bg-muted/20 border-b border-border/60 bg-blueprint-dots relative">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-5 p-5 rounded-xl bg-card/90 backdrop-blur-xs border border-border/80 shadow-2xs">
+                {/* Physical Dimension Block Representation */}
                 <div
-                  className="flex items-center justify-center rounded-lg border-2 border-border shadow-inner font-mono text-sm font-bold text-white uppercase transition-all duration-300"
+                  className="flex items-center justify-center rounded-xl border-2 border-border shadow-inner font-mono text-sm font-bold text-white uppercase transition-all duration-300 relative overflow-hidden shrink-0"
                   style={{
                     backgroundColor: selectedComponent.visual.color,
-                    width: Math.min(selectedComponent.visual.width, 180),
-                    height: Math.min(selectedComponent.visual.height, 120),
+                    width: Math.min(selectedComponent.visual.width, 200),
+                    height: Math.min(selectedComponent.visual.height, 130),
                   }}
                 >
-                  <div className="text-center p-2">
-                    <div className="text-xs tracking-wider opacity-80">{selectedComponent.category}</div>
-                    <div className="text-[10px] font-normal opacity-60">
-                      {selectedComponent.visual.width}x{selectedComponent.visual.height} mm
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
+                  <div className="relative text-center p-2 z-10">
+                    <div className="text-xs tracking-wider opacity-90 font-display">{selectedComponent.category}</div>
+                    <div className="text-[10px] font-mono opacity-70">
+                      {selectedComponent.visual.width} × {selectedComponent.visual.height} mm
                     </div>
                   </div>
                 </div>
 
-                <div className="flex-1 space-y-2 text-xs">
+                {/* Key Spec Parameters */}
+                <div className="flex-1 w-full space-y-2 text-xs">
                   <div className="grid grid-cols-2 gap-2 text-muted-foreground">
-                    <div>
-                      <span className="font-semibold text-foreground">Category:</span>{' '}
-                      <span className="capitalize">{selectedComponent.category}</span>
+                    <div className="p-2 rounded-lg bg-secondary/50 border border-border/40">
+                      <span className="block text-[10px] uppercase font-mono text-muted-foreground">Form Factor</span>
+                      <strong className="text-foreground">{selectedComponent.formFactor || 'Standard'}</strong>
                     </div>
-                    {selectedComponent.formFactor && (
-                      <div>
-                        <span className="font-semibold text-foreground">Form Factor:</span>{' '}
-                        <span>{selectedComponent.formFactor}</span>
-                      </div>
-                    )}
                     {selectedComponent.socket && (
-                      <div>
-                        <span className="font-semibold text-foreground">Socket:</span>{' '}
-                        <span>{selectedComponent.socket}</span>
+                      <div className="p-2 rounded-lg bg-secondary/50 border border-border/40">
+                        <span className="block text-[10px] uppercase font-mono text-muted-foreground">Socket Standard</span>
+                        <strong className="text-foreground">{selectedComponent.socket}</strong>
                       </div>
                     )}
                     {selectedComponent.ddr && (
-                      <div>
-                        <span className="font-semibold text-foreground">Memory Gen:</span>{' '}
-                        <span>{selectedComponent.ddr}</span>
+                      <div className="p-2 rounded-lg bg-secondary/50 border border-border/40">
+                        <span className="block text-[10px] uppercase font-mono text-muted-foreground">Memory Architecture</span>
+                        <strong className="text-foreground">{selectedComponent.ddr}</strong>
                       </div>
                     )}
                     {selectedComponent.interfaceType && (
-                      <div>
-                        <span className="font-semibold text-foreground">Interface:</span>{' '}
-                        <span>{selectedComponent.interfaceType}</span>
+                      <div className="p-2 rounded-lg bg-secondary/50 border border-border/40">
+                        <span className="block text-[10px] uppercase font-mono text-muted-foreground">Bus Interface</span>
+                        <strong className="text-foreground">{selectedComponent.interfaceType}</strong>
                       </div>
                     )}
                     {selectedComponent.wattage && (
-                      <div>
-                        <span className="font-semibold text-foreground">Rated Power:</span>{' '}
-                        <span>{selectedComponent.wattage} Watts</span>
+                      <div className="p-2 rounded-lg bg-secondary/50 border border-border/40">
+                        <span className="block text-[10px] uppercase font-mono text-muted-foreground">Rated Power Draw</span>
+                        <strong className="text-foreground">{selectedComponent.wattage} Watts TDP</strong>
                       </div>
                     )}
+                    <div className="p-2 rounded-lg bg-secondary/50 border border-border/40">
+                      <span className="block text-[10px] uppercase font-mono text-muted-foreground">Chassis Slot</span>
+                      <strong className="text-foreground">{selectedComponent.locationText.split(' ')[0]} Area</strong>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <CardContent className="space-y-4 pt-4">
-              {/* 1. Function & Purpose */}
-              <div className="flex items-start gap-3 rounded-lg border border-border/60 bg-muted/20 p-3.5">
-                <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-blue-500/10 text-blue-500">
+            {/* 4 Architectural Spec Ledger Quadrants */}
+            <CardContent className="space-y-4 pt-5">
+              {/* 1. Purpose & Core Function */}
+              <div className="flex items-start gap-3.5 rounded-xl border border-border/70 bg-card p-4 shadow-2xs">
+                <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20">
                   <Info className="size-4" />
                 </div>
-                <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">
-                    What It Does
+                <div className="space-y-1">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-foreground font-mono">
+                    Architectural Purpose &amp; Role
                   </h4>
-                  <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                  <p className="text-xs text-muted-foreground leading-relaxed">
                     {selectedComponent.functionText}
                   </p>
                 </div>
               </div>
 
-              {/* 2. Installation Location */}
-              <div className="flex items-start gap-3 rounded-lg border border-border/60 bg-muted/20 p-3.5">
-                <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-500">
+              {/* 2. Physical Location in Chassis */}
+              <div className="flex items-start gap-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 shadow-2xs">
+                <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                   <CheckCircle2 className="size-4" />
                 </div>
-                <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">
-                    Where It Belongs
+                <div className="space-y-1">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 font-mono">
+                    Chassis Standoff &amp; Socket Target
                   </h4>
-                  <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                  <p className="text-xs text-muted-foreground leading-relaxed">
                     {selectedComponent.locationText}
                   </p>
                 </div>
               </div>
 
-              {/* 3. Important Compatibility Rule */}
-              <div className="flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3.5">
-                <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-amber-500/10 text-amber-500">
+              {/* 3. Strict Compatibility Constraint */}
+              <div className="flex items-start gap-3.5 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 shadow-2xs">
+                <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
                   <AlertTriangle className="size-4" />
                 </div>
-                <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
-                    Important Compatibility Rule
+                <div className="space-y-1">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 font-mono">
+                    Interconnect Compatibility Rule
                   </h4>
-                  <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                  <p className="text-xs text-muted-foreground leading-relaxed">
                     {selectedComponent.ruleText}
                   </p>
                 </div>
               </div>
 
-              {/* 4. Installation Concept & Best Practices */}
-              <div className="flex items-start gap-3 rounded-lg border border-purple-500/30 bg-purple-500/5 p-3.5">
-                <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-purple-500/10 text-purple-500">
-                  <ShieldAlert className="size-4" />
+              {/* 4. Installation Concept & Safety Note */}
+              <div className="flex items-start gap-3.5 rounded-xl border border-indigo-500/30 bg-indigo-500/5 p-4 shadow-2xs">
+                <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                  <ShieldCheck className="size-4" />
                 </div>
-                <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400">
-                    Installation Concept &amp; Safety Note
+                <div className="space-y-1">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300 font-mono">
+                    Handling Protocol &amp; Assembly Concept
                   </h4>
-                  <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                  <p className="text-xs text-muted-foreground leading-relaxed">
                     {selectedComponent.conceptText}
                   </p>
                 </div>
               </div>
             </CardContent>
 
-            <CardFooter className="flex flex-wrap items-center justify-between gap-3 border-t border-border/60 pt-4">
-              <div className="text-xs text-muted-foreground">
-                Ready to assemble this part into the virtual chassis?
+            <CardFooter className="flex flex-wrap items-center justify-between gap-4 border-t border-border/60 pt-4 bg-muted/10">
+              <div className="text-xs text-muted-foreground flex items-center gap-1.5">
+                <Sparkles className="size-3.5 text-primary" />
+                <span>Ready to mount this hardware into the 3D desktop chassis?</span>
               </div>
-              <Link to="/guided">
-                <Button size="sm" className="gap-2 font-medium active:scale-95 transition-transform">
-                  <Wrench className="size-3.5" />
-                  <span>Mount in Guided Build</span>
-                  <ArrowRight className="size-3.5" />
-                </Button>
-              </Link>
+              <div className="flex items-center gap-2">
+                {CATEGORY_TO_3D[selectedComponent.category] && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setInspect3DCompId(selectedComponent.id)}
+                    className="gap-1.5 text-xs font-medium pressable-element"
+                  >
+                    <Box className="size-3.5 text-primary" />
+                    <span>3D View</span>
+                  </Button>
+                )}
+                <Link to="/guided">
+                  <Button size="sm" className="gap-2 font-semibold shadow-xs pressable-element">
+                    <Wrench className="size-3.5" />
+                    <span>Mount in Guided Build</span>
+                    <ArrowRight className="size-3.5" />
+                  </Button>
+                </Link>
+              </div>
             </CardFooter>
           </Card>
         </div>
       </div>
+
+      {/* 3D Component Inspection Modal */}
+      {inspect3DCompId && active3DPartType && (
+        <Dialog open={true} onOpenChange={(open) => !open && setInspect3DCompId(null)}>
+          <DialogContent className="max-w-2xl bg-card/95 border-border/80 rounded-2xl shadow-2xl backdrop-blur-xl overflow-hidden">
+            <DialogHeader>
+              <div className="flex items-center gap-2">
+                <BrandBadge variant="cyan">
+                  {components.find((c) => c.id === inspect3DCompId)?.category}
+                </BrandBadge>
+                <DialogTitle className="text-lg font-bold font-display text-foreground">
+                  {components.find((c) => c.id === inspect3DCompId)?.name}
+                </DialogTitle>
+              </div>
+              <DialogDescription className="text-xs text-muted-foreground">
+                Rotate with left-click drag to inspect contacts, pin arrays, and heatsink geometry.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="w-full h-80 rounded-xl overflow-hidden bg-secondary/30 border border-border/80 shadow-inner relative bg-blueprint-dots">
+              <Scene3D cameraPosition={[4, 3, 5]} autoRotate autoRotateSpeed={0.8}>
+                <Part3D type={active3DPartType} animated />
+              </Scene3D>
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full glass-surface border border-border/80 text-[10px] text-muted-foreground font-mono pointer-events-none shadow-xs">
+                Drag: Rotate • Scroll: Zoom • Right Drag: Pan
+              </div>
+            </div>
+
+            <div className="text-xs text-muted-foreground space-y-1 bg-primary/10 p-3.5 rounded-xl border border-primary/30">
+              <div className="text-primary font-bold font-mono text-[11px] uppercase tracking-wider">
+                Engineering Notes:
+              </div>
+              <p className="text-foreground leading-relaxed">{components.find((c) => c.id === inspect3DCompId)?.conceptText}</p>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };

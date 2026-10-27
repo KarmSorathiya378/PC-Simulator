@@ -1,27 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Cable,
   Zap,
   CheckCircle2,
   AlertCircle,
-  RotateCcw,
+  Power,
+  Box,
   ArrowRight,
   ShieldCheck,
-  Power,
-  Cpu,
-  Layers,
   Sparkles,
-  Box,
+  Layers,
+  Activity,
 } from 'lucide-react';
 import { useAssemblyStore } from '../../store/assemblyStore';
 import { requiredConnections } from '../../data/buildConfig';
-import { SOCKET_COORDINATES } from '../../data/connectionConfig';
 import { AssemblyCanvas } from '../../simulator/AssemblyCanvas';
 import { Button } from '../../components/ui/button';
-import { Badge } from '../../components/ui/badge';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../components/ui/card';
 import { Progress } from '../../components/ui/progress';
+import { BrandBadge, GlowCard, GradientText, GlassPanel, Chip } from '../../components/ui';
 import {
   Dialog,
   DialogContent,
@@ -37,6 +35,8 @@ interface CableOption {
   socketId: string;
   voltage: string;
   description: string;
+  wireGauge: string;
+  specStandard: string;
 }
 
 const CABLE_OPTIONS: CableOption[] = [
@@ -46,6 +46,8 @@ const CABLE_OPTIONS: CableOption[] = [
     socketId: 'socket-mb-24pin',
     voltage: '+3.3V, +5V, +12V Rails',
     description: 'Delivers primary DC operational current to motherboard chipset, RAM channels, and PCIe trace lanes.',
+    wireGauge: '18 AWG High-Flex Sleeved',
+    specStandard: 'ATX12V v3.0 / EPS12V',
   },
   {
     cableId: 'cable-8pin-eps',
@@ -53,6 +55,8 @@ const CABLE_OPTIONS: CableOption[] = [
     socketId: 'socket-cpu-8pin',
     voltage: '+12V Dedicated Rail',
     description: 'Powers the motherboard Voltage Regulator Modules (VRMs) to feed the multi-core AMD Ryzen processor.',
+    wireGauge: '16 AWG Heavy Duty',
+    specStandard: 'EPS12V Dedicated Rail',
   },
   {
     cableId: 'cable-8pin-pcie',
@@ -60,6 +64,8 @@ const CABLE_OPTIONS: CableOption[] = [
     socketId: 'socket-gpu-pcie',
     voltage: '+12V High-Amperage Rail',
     description: 'Delivers auxiliary dedicated wattage (up to 150W per connector) for the NVIDIA RTX 4070 Super GPU.',
+    wireGauge: '16 AWG Copper Core',
+    specStandard: 'PCIe Auxiliary Spec',
   },
 ];
 
@@ -84,7 +90,7 @@ export const ConnectionScreen: React.FC = () => {
     if (result.ok) {
       setFeedback({
         ok: true,
-        message: `Successfully connected ${cableId} to ${socketId}! Power rail established.`,
+        message: `Connected! ${cableId} latched into ${socketId}. DC power rail established.`,
       });
       // Select next unconnected cable
       const nextUnconnected = CABLE_OPTIONS.find(
@@ -111,100 +117,116 @@ export const ConnectionScreen: React.FC = () => {
         setPowerOnSuccess(true);
         setFeedback({
           ok: true,
-          message: 'POST Passed! All motherboard diagnostic LEDs illuminated green. System successfully boots into UEFI BIOS!',
+          message: 'POST Passed! All diagnostic LEDs illuminated green. System successfully boots into UEFI BIOS!',
         });
       } else {
         setPowerOnSuccess(false);
         setFeedback({
           ok: false,
-          message: 'POST Failed: No power delivered to one or more components. Check missing cables on the checklist.',
+          message: 'POST Failed: Missing DC current to one or more subsystems. Check unconnected cables on the checklist.',
         });
       }
-    }, 1200);
+    }, 1100);
   };
 
+  const selectedCable = useMemo(() => {
+    return CABLE_OPTIONS.find((c) => c.cableId === selectedCableId) || CABLE_OPTIONS[0];
+  }, [selectedCableId]);
+
   return (
-    <div className="space-y-6 py-4">
-      {/* Breadcrumb Navigation */}
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Link to="/" className="hover:text-foreground transition-colors">
-          Home
-        </Link>
-        <span>/</span>
-        <span className="font-medium text-foreground">Connection Mode</span>
-      </div>
-
-      {/* Screen Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/60 pb-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <Cable className="size-4" />
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
-              Power Cabling &amp; Wiring Studio
-            </h1>
-          </div>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Route and latch the essential modular power cables from the 850W PSU to motherboard and graphics sockets.
-          </p>
-        </div>
-
-        {/* Action Controls */}
-        <div className="flex items-center gap-2 shrink-0">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShow3DInspector(true)}
-            className="gap-1.5 text-xs font-medium"
-          >
-            <Box className="size-3.5 text-primary" />
-            <span>3D Wiring Inspector</span>
-          </Button>
-
-          <Button
-            size="sm"
-            onClick={handleSimulatePost}
-            disabled={isPoweringUp}
-            className={`gap-1.5 font-semibold active:scale-95 transition-all shadow-xs ${
-              powerOnSuccess
-                ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                : 'bg-primary hover:bg-primary/90'
-            }`}
-          >
-            <Power className={`size-3.5 ${isPoweringUp ? 'animate-spin' : ''}`} />
-            <span>{isPoweringUp ? 'Running POST...' : 'Simulate Power ON'}</span>
-          </Button>
-
-          <Link to="/results">
-            <Button variant="outline" size="sm" className="gap-1.5 text-xs">
-              <span>View Scorecard</span>
-              <ArrowRight className="size-3.5" />
-            </Button>
+    <div className="space-y-8 py-2 w-full max-w-full overflow-hidden font-sans">
+      {/* Top Breadcrumb & Status */}
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground border-b border-border/60 pb-3">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2">
+          <Link to="/" className="hover:text-foreground transition-colors">
+            Platform
           </Link>
+          <span className="text-muted-foreground/60">/</span>
+          <span className="font-semibold text-foreground">Power Cabling &amp; Wiring</span>
+        </nav>
+        <div className="flex items-center gap-2.5 font-mono text-[11px]">
+          <BrandBadge variant="emerald" pulse>750W Gold Modular Rail</BrandBadge>
+          <span className="text-muted-foreground/40">•</span>
+          <span className="text-muted-foreground">Keyed Retention Clips</span>
         </div>
       </div>
+
+      {/* Screen Hero Header */}
+      <GlowCard glowColor="cyan" className="p-6 sm:p-8 card-elevated">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="space-y-3 max-w-2xl">
+            <div className="inline-flex items-center gap-2">
+              <BrandBadge variant="cyan">
+                <Cable className="size-3 mr-1 inline" />
+                DC POWER DISTRIBUTION // MODULAR ATX HARNESS
+              </BrandBadge>
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground font-display">
+              Power Cabling &amp; <GradientText variant="cyan-violet">Wiring Studio</GradientText>
+            </h1>
+            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+              Route and securely latch dedicated modular power rails from the PSU shroud to the
+              motherboard 24-Pin ATX, 8-Pin EPS CPU, and PCIe graphics headers.
+            </p>
+          </div>
+
+          {/* Action Toolbar */}
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShow3DInspector(true)}
+              className="gap-2 text-xs font-medium pressable-element shadow-2xs"
+            >
+              <Box className="size-3.5 text-primary" />
+              <span>3D Harness Inspector</span>
+            </Button>
+
+            <Button
+              size="sm"
+              onClick={handleSimulatePost}
+              disabled={isPoweringUp}
+              className={`gap-2 font-bold pressable-element shadow-xs ${
+                powerOnSuccess
+                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                  : 'bg-primary hover:bg-primary-hover text-primary-foreground'
+              }`}
+            >
+              <Power className={`size-3.5 ${isPoweringUp ? 'animate-spin' : ''}`} />
+              <span>{isPoweringUp ? 'Running POST...' : 'Simulate Power ON'}</span>
+            </Button>
+
+            <Link to="/results">
+              <Button variant="outline" size="sm" className="gap-1.5 text-xs pressable-element">
+                <span>Scorecard</span>
+                <ArrowRight className="size-3.5" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </GlowCard>
 
       {/* Dynamic Feedback Banner */}
       {feedback && (
         <div
-          className={`rounded-lg border p-3.5 text-xs flex items-center justify-between gap-3 shadow-xs ${
+          className={`rounded-xl border p-4 text-xs flex items-center justify-between gap-3 shadow-xs animate-in fade-in duration-150 ${
             feedback.ok
-              ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+              ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300'
               : 'border-destructive/30 bg-destructive/10 text-destructive'
           }`}
         >
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-3">
             {feedback.ok ? (
-              <CheckCircle2 className="size-4 shrink-0" />
+              <CheckCircle2 className="size-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
             ) : (
-              <AlertCircle className="size-4 shrink-0" />
+              <AlertCircle className="size-5 shrink-0 text-destructive" />
             )}
-            <span className="font-medium">{feedback.message}</span>
+            <span className="font-semibold">{feedback.message}</span>
           </div>
           <button
+            type="button"
             onClick={() => setFeedback(null)}
-            className="text-xs underline opacity-80 hover:opacity-100"
+            className="text-xs font-mono underline opacity-80 hover:opacity-100 cursor-pointer"
           >
             Dismiss
           </button>
@@ -215,70 +237,86 @@ export const ConnectionScreen: React.FC = () => {
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
         {/* Center: Konva 2D Canvas in Connection Mode */}
         <div className="xl:col-span-8 flex flex-col items-center gap-4">
-          <AssemblyCanvas
-            interactiveMode="connection"
-            width={680}
-            height={560}
-          />
+          <GlassPanel
+            variant="surface"
+            withInnerBevel
+            className="w-full flex justify-center bg-card rounded-2xl border border-border/80 p-3 shadow-xs card-elevated relative overflow-hidden bg-blueprint-dots"
+          >
+            {/* Viewport Tech Crosshairs */}
+            <div className="absolute top-2 left-2 size-3 border-t-2 border-l-2 border-border-strong pointer-events-none z-10 opacity-70" />
+            <div className="absolute top-2 right-2 size-3 border-t-2 border-r-2 border-border-strong pointer-events-none z-10 opacity-70" />
+            <div className="absolute bottom-2 left-2 size-3 border-b-2 border-l-2 border-border-strong pointer-events-none z-10 opacity-70" />
+            <div className="absolute bottom-2 right-2 size-3 border-b-2 border-r-2 border-border-strong pointer-events-none z-10 opacity-70" />
+
+            <AssemblyCanvas
+              interactiveMode="connection"
+              width={680}
+              height={560}
+            />
+          </GlassPanel>
 
           {/* Diagnostic Status Box */}
-          <div className="w-full rounded-xl border border-border/80 bg-card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
+          <GlassPanel
+            variant="surface"
+            className="w-full rounded-2xl border border-border/80 bg-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 card-elevated"
+          >
+            <div className="flex items-center gap-3.5">
               <div
-                className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${
+                className={`flex size-11 shrink-0 items-center justify-center rounded-xl border shadow-inner transition-colors ${
                   powerOnSuccess === true
-                    ? 'bg-emerald-500/10 text-emerald-500'
+                    ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30'
                     : powerOnSuccess === false
-                    ? 'bg-destructive/10 text-destructive'
-                    : 'bg-primary/10 text-primary'
+                    ? 'bg-destructive/10 text-destructive border-destructive/30'
+                    : 'bg-primary/10 text-primary border-primary/20'
                 }`}
               >
                 <Zap className="size-5" />
               </div>
               <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">
-                  Power Rails Status
+                <h4 className="text-xs font-bold uppercase tracking-wider text-foreground font-mono">
+                  Power Harness Status // POST Check
                 </h4>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
                   {allConnected
-                    ? 'All 3 essential power cables securely seated and latched. Ready for POST ignition.'
-                    : `${progress.connectedCount} of ${requiredConnections.length} cables connected. Route remaining rails.`}
+                    ? 'All 3 dedicated modular power harnesses latched into their sockets. Ready for UEFI POST ignition.'
+                    : `${progress.connectedCount} of ${requiredConnections.length} cables connected. Route remaining rails before power on.`}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               {allConnected && (
                 <Link to="/results">
-                  <Button size="sm" className="gap-2 font-semibold shadow-xs">
+                  <Button size="sm" className="gap-2 font-bold shadow-xs pressable-element bg-emerald-600 hover:bg-emerald-700 text-white">
                     <Sparkles className="size-3.5" />
-                    <span>Proceed to Assessment Quiz</span>
+                    <span>Proceed to Assessment</span>
                     <ArrowRight className="size-3.5" />
                   </Button>
                 </Link>
               )}
             </div>
-          </div>
+          </GlassPanel>
         </div>
 
         {/* Right Column: Cable Roster & Checklist */}
         <div className="xl:col-span-4 space-y-4">
           {/* Progress Tracker Card */}
-          <Card className="border-border/80 bg-card shadow-xs">
-            <CardHeader className="pb-3">
+          <Card className="border-border/80 bg-card shadow-xs card-elevated">
+            <CardHeader className="pb-3 border-b border-border/60">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-bold tracking-tight text-foreground">
+                <CardTitle className="text-sm font-bold tracking-tight text-foreground font-display">
                   Cabling Checklist
                 </CardTitle>
-                <Badge variant={allConnected ? 'default' : 'secondary'} className="font-mono text-xs">
-                  {progress.connectedCount} / {requiredConnections.length} Rails
-                </Badge>
+                <BrandBadge variant={allConnected ? 'emerald' : 'slate'}>
+                  {progress.connectedCount} / {requiredConnections.length} Latched
+                </BrandBadge>
               </div>
               <CardDescription className="text-xs text-muted-foreground">
-                All cables must be routed from the bottom PSU shroud to their target sockets.
+                Connect each power rail from the lower shroud to the target header.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3">
+
+            <CardContent className="space-y-3 pt-4">
               <Progress
                 value={(progress.connectedCount / requiredConnections.length) * 100}
                 className="h-2"
@@ -295,39 +333,39 @@ export const ConnectionScreen: React.FC = () => {
                     <div
                       key={cable.cableId}
                       onClick={() => setSelectedCableId(cable.cableId)}
-                      className={`p-3 rounded-lg border cursor-pointer transition-all active:scale-[0.99] ${
+                      className={`p-3 rounded-xl border cursor-pointer transition-all duration-150 pressable-element ${
                         isSelected
                           ? 'border-primary bg-primary/5 ring-1 ring-primary/20 shadow-xs'
                           : isConnected
                           ? 'border-emerald-500/40 bg-emerald-500/5'
-                          : 'border-border/80 bg-card hover:border-border'
+                          : 'border-border/80 bg-card hover:border-border-strong hover:shadow-2xs'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2 min-w-0">
+                        <div className="flex items-center gap-2.5 min-w-0">
                           <Zap
                             className={`size-4 shrink-0 ${
                               isConnected ? 'text-emerald-500' : 'text-muted-foreground'
                             }`}
                           />
-                          <span className="text-xs font-semibold truncate text-foreground">
+                          <span className="text-xs font-bold truncate text-foreground font-display">
                             {cable.name}
                           </span>
                         </div>
                         {isConnected ? (
-                          <Badge variant="default" className="bg-emerald-600 text-white text-[10px] shrink-0">
-                            Connected
-                          </Badge>
+                          <BrandBadge variant="emerald" className="text-[10px] shrink-0 font-mono">
+                            Latched
+                          </BrandBadge>
                         ) : (
-                          <Badge variant="outline" className="text-[10px] shrink-0">
-                            Unplugged
-                          </Badge>
+                          <BrandBadge variant="slate" className="text-[10px] shrink-0 font-mono">
+                            Awaiting
+                          </BrandBadge>
                         )}
                       </div>
 
-                      <div className="mt-1.5 flex items-center justify-between text-[11px] text-muted-foreground">
-                        <span>Target: <code className="font-mono text-foreground">{cable.socketId}</code></span>
-                        <span>{cable.voltage}</span>
+                      <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground font-mono">
+                        <span>Target: <code className="text-foreground font-bold">{cable.socketId}</code></span>
+                        <span>{cable.voltage.split(',')[0]}</span>
                       </div>
 
                       {!isConnected && (
@@ -338,10 +376,10 @@ export const ConnectionScreen: React.FC = () => {
                               e.stopPropagation();
                               handleConnectCable(cable.cableId, cable.socketId);
                             }}
-                            className="h-7 text-xs px-3 gap-1 active:scale-95"
+                            className="h-7 text-xs px-3 gap-1.5 pressable-element shadow-2xs font-semibold"
                           >
                             <Cable className="size-3" />
-                            <span>Connect Cable</span>
+                            <span>Latch Cable</span>
                           </Button>
                         </div>
                       )}
@@ -352,62 +390,94 @@ export const ConnectionScreen: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* Selected Cable Details */}
-          {selectedCableId && (() => {
-            const cable = CABLE_OPTIONS.find((c) => c.cableId === selectedCableId);
-            if (!cable) return null;
-            const isConnected = store.connections.some((c) => c.cableId === cable.cableId);
+          {/* Selected Cable Pinout Spec Card */}
+          <Card className="border-border/80 bg-card shadow-xs p-5 space-y-3 card-elevated">
+            <div className="flex items-center justify-between border-b border-border/60 pb-2">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="size-4 text-primary" />
+                <h4 className="text-xs font-bold uppercase tracking-wider text-foreground font-mono">
+                  Hardware Pinout Spec
+                </h4>
+              </div>
+              <BrandBadge variant="cyan" className="text-[10px]">
+                {selectedCable.specStandard}
+              </BrandBadge>
+            </div>
 
-            return (
-              <Card className="border-border/80 bg-muted/20 p-4 space-y-2">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="size-4 text-primary" />
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">
-                    Hardware Pinout Spec
-                  </h4>
-                </div>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {cable.description}
-                </p>
-                <div className="text-xs font-mono text-muted-foreground pt-1 border-t border-border/60 flex justify-between">
-                  <span>Rail: {cable.voltage}</span>
-                  <span className={isConnected ? 'text-emerald-500 font-bold' : 'text-amber-500 font-bold'}>
-                    {isConnected ? 'LATCHED' : 'AWAITING SEATING'}
-                  </span>
-                </div>
-              </Card>
-            );
-          })()}
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {selectedCable.description}
+            </p>
+
+            <div className="space-y-1.5 text-xs font-mono text-muted-foreground pt-1 border-t border-border/60">
+              <div className="flex justify-between">
+                <span>Wire Standard:</span>
+                <span className="text-foreground font-semibold">{selectedCable.wireGauge}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>DC Rails:</span>
+                <span className="text-foreground font-semibold">{selectedCable.voltage}</span>
+              </div>
+              <div className="flex justify-between pt-1">
+                <span>Terminal State:</span>
+                <span
+                  className={
+                    store.connections.some((c) => c.cableId === selectedCable.cableId)
+                      ? 'text-emerald-500 font-bold'
+                      : 'text-amber-500 font-bold'
+                  }
+                >
+                  {store.connections.some((c) => c.cableId === selectedCable.cableId)
+                    ? 'CIRCUIT CLOSED'
+                    : 'AWAITING SEATING'}
+                </span>
+              </div>
+            </div>
+          </Card>
         </div>
       </div>
 
       {/* 3D Power Harness & Cabling Inspection Modal */}
       {show3DInspector && (
         <Dialog open={true} onOpenChange={(open) => !open && setShow3DInspector(false)}>
-          <DialogContent className="max-w-2xl bg-card border-border">
+          <DialogContent className="max-w-2xl bg-card/95 border-border/80 rounded-2xl shadow-2xl backdrop-blur-xl overflow-hidden">
             <DialogHeader>
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-xs uppercase font-mono">
+                <BrandBadge variant="cyan">
                   Modular Harness 3D
-                </Badge>
-                <DialogTitle className="text-lg font-bold">24-Pin Sleeved ATX Power Cable</DialogTitle>
+                </BrandBadge>
+                <DialogTitle className="text-lg font-bold font-display text-foreground">
+                  High-Flex Sleeved ATX Power Connector
+                </DialogTitle>
               </div>
               <DialogDescription className="text-xs text-muted-foreground">
-                Rotate with mouse to examine the molded terminal block, dual-row gold pins, and retention snap latch.
+                Rotate with mouse drag to examine molded nylon housing, gold contacts, and keyed retention snap.
               </DialogDescription>
             </DialogHeader>
 
-            <div className="w-full h-72 rounded-xl overflow-hidden bg-slate-950/80 border border-border/80 shadow-inner">
-              <Scene3D cameraPosition={[3, 2, 4]} autoRotate autoRotateSpeed={1.0}>
-                <Part3D type="cable" animated />
+            <div className="w-full h-84 sm:h-96 min-h-[350px] rounded-xl overflow-hidden bg-secondary/30 border border-border/80 shadow-inner relative bg-blueprint-dots">
+              <Scene3D
+                key="cable"
+                cameraPosition={[4.5, 3.5, 5.5]}
+                autoFit={true}
+                targetFill={0.84}
+                autoCenter={true}
+                autoRotate
+                autoRotateSpeed={1.0}
+              >
+                <Part3D type="cable" animated fitContainer autoCenter />
               </Scene3D>
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full glass-surface border border-border/80 text-[10px] text-muted-foreground font-mono pointer-events-none shadow-xs">
+                Drag: Rotate • Scroll: Zoom • Right Drag: Pan
+              </div>
             </div>
 
-            <div className="text-xs text-muted-foreground space-y-1 bg-muted/30 p-3 rounded-lg border border-border/60">
-              <div className="text-foreground font-semibold">Cabling Key Safety Rule:</div>
-              <p>
-                Modern high-wattage power supplies use keyed latching pins to prevent reverse polarity.
-                Ensure the release tab snaps firmly over the header clip before powering on.
+            <div className="text-xs text-muted-foreground space-y-1 bg-primary/10 p-3.5 rounded-xl border border-primary/30">
+              <div className="text-primary font-bold font-mono text-[11px] uppercase tracking-wider">
+                Electrical Safety Standard:
+              </div>
+              <p className="text-foreground leading-relaxed">
+                Modern high-wattage power supplies utilize keyed pin geometries (squares and bevels) to prevent
+                incorrect polarity insertion. Verify the top retention latch snaps firmly over the header clip.
               </p>
             </div>
           </DialogContent>

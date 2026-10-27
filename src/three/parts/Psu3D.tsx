@@ -10,7 +10,9 @@ export const Psu3D: React.FC<Psu3DProps> = ({ wireframe = false }) => {
 
   return (
     <group dispose={null}>
-      {/* 1. Main ATX Steel Casing Body (Powder-coated textured dark metal) */}
+      {/* Centered at origin [0, 0, 0] across modular socket array and rear AC power port */}
+      <group position={[0, 0, -0.04]}>
+        {/* 1. Main ATX Steel Casing Body (Powder-coated textured dark metal) */}
       <mesh position={[0, 0, 0]} castShadow receiveShadow>
         <boxGeometry args={[4.8, 3.2, 5.2]} />
         <meshStandardMaterial
@@ -144,6 +146,7 @@ export const Psu3D: React.FC<Psu3DProps> = ({ wireframe = false }) => {
             metalness={0.8}
           />
         </mesh>
+      </group>
       </group>
     </group>
   );

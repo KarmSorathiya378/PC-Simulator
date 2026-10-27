@@ -12,7 +12,9 @@ export const Motherboard3D: React.FC<Motherboard3DProps> = ({
 
   return (
     <group dispose={null}>
-      {/* 1. Main ATX Motherboard PCB Substrate */}
+      {/* Centered at origin [0, 0, 0] across PCB and VRM/heatsink height */}
+      <group position={[0, -0.62, 0]}>
+        {/* 1. Main ATX Motherboard PCB Substrate */}
       <mesh position={[0, 0, 0]} castShadow receiveShadow>
         <boxGeometry args={[7.8, 0.12, 7.8]} />
         <meshStandardMaterial
@@ -184,6 +186,7 @@ export const Motherboard3D: React.FC<Motherboard3DProps> = ({
           <meshStandardMaterial color="#D97706" roughness={0.3} metalness={0.8} />
         </mesh>
       ))}
+      </group>
     </group>
   );
 };

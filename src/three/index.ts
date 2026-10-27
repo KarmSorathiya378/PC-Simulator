@@ -3,10 +3,10 @@
  * Clean, modular, typed, and fully procedural with Three.js & React Three Fiber.
  */
 
-export { Scene3D } from './Scene3D';
+export { Scene3D, computePreciseFitDistance, computeModelBoundingBox } from './Scene3D';
 export type { Scene3DProps } from './Scene3D';
 
-export { Part3D } from './Part3D';
+export { Part3D, PART_CANONICAL_SCALES } from './Part3D';
 export type { Part3DProps, HardwarePartType, PartVisualMetadata } from './types';
 
 export { Hardware3DPreview } from './Hardware3DPreview';
